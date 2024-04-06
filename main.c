@@ -1,23 +1,56 @@
 #include <stdio.h>
+#include <stdlib.h>
+#include <time.h>
 
-/*void emodji(){
+void CreateRoom() {
+    int l, L;
+    L = rand() % 7 + 6; // Générer une longueur aléatoire entre 6 et 12
+    l = L - (rand() % 5); // Générer une largeur aléatoire qui assure que la différence est de 4 max
+    printf("Longueur: %d\n", L);
+    printf("Largeur: %d\n", l);
 
-    int i, j, k = 0;
+    // Création du tableau 2D pour représenter la room
+    char room[l][L];
 
-    puts("\n ___ TABLEAU DECIMAL ___");
-    puts("\n     0 1 2 3 4 5 6 7 8 9");
-    for(i = 0; i < 26; i++) {
-        printf("\n %2d  ", i);
-        for(j = 0; j < 10; j++, k++)
-            printf("%c ", k != 7 && k != 8 && k != 9 && k != 10 && k != 13 && k < 256 ? k : ' ');
+    // Remplissage du tableau pour les bords et les coins
+    for (int i = 0; i < l; i++) {
+        for (int j = 0; j < L; j++) {
+            if (i == 0 && j == 0) {
+                room[i][j] = '1';
+            }
+            else if (i == 0 && j == L - 1){
+                room[i][j] = '2';
+            }
+            else if (i == l - 1 && j == 0){
+                room[i][j] = '3';
+            }
+            else if (i == l - 1 && j == L - 1){
+                room[i][j] = '4';
+            }
+            else if (i == 0 || i == l - 1) {
+                room[i][j] = '-';
+            }
+            else if (j == 0 || j == L - 1) {
+                room[i][j] = '|';
+            }
+            else {
+                room[i][j] = ' '; // Intérieur de la room
+            }
+        }
     }
 
-    puts("\n _______________________");
-    return 0;
-}*/
-
+    // Affichage du tableau représentant la room
+    for (int i = 0; i < l; i++) {
+        for (int j = 0; j < L; j++) {
+            printf("%c", room[i][j]);
+        }
+        printf("\n");
+    }
+}
 
 int main() {
-    puts("😊\n");
+    srand(time(NULL));
+
+    CreateRoom();
     return 0;
 }
