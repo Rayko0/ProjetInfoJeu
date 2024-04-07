@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <time.h>
+#include <string.h>
 
 #define MAXROOM 20
 
@@ -11,6 +12,34 @@ typedef struct { // Create the type Room
     char** Tab2D; // 2-dimensional table of the room
     char* Doors; // Coordinates of all the doors in the room
 } Room;
+
+typedef struct{
+    int x;
+    int y;
+}Coordinates;
+
+typedef struct { // Create the type Player
+    char[100] Name;
+    float Health;
+    float Attack;
+    float Exp;
+    Coordinates Position;
+} Player;
+
+Player BuildPlayer(){
+    Player P1;
+    int res = -1;
+    printf("Donnez votre pseudo.\n");
+    res = scanf("%s", P1.Name);
+    while(res<1 && strlen(P1.Name)>100) {
+        printf("Donnez un pseudo valide.\n");
+        res = scanf("%s", P1.Name);
+    }
+    P1.Health = 100;
+    P1.Attack = 10;
+    P1.Exp=0;
+    
+}
 
 int GenerateNumberOfRoom(){ // Generate a random number of room between 10 and MAXROOM in a pointer to an integer
     int a;
