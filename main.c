@@ -19,7 +19,7 @@ typedef struct{
 }Coordinates;
 
 typedef struct { // Create the type Player
-    char[100] Name;
+    char Name[100];
     float Health;
     float Attack;
     float Exp;
@@ -38,7 +38,8 @@ Player BuildPlayer(){
     P1.Health = 100;
     P1.Attack = 10;
     P1.Exp=0;
-    
+    P1.Position.x=0;
+    P1.Position.y=0;
 }
 
 int GenerateNumberOfRoom(){ // Generate a random number of room between 10 and MAXROOM in a pointer to an integer
@@ -138,5 +139,6 @@ int main() {
     AllRoom[0]=room;
     room.Tab2D[y][x]='&';
     PrintfRoom(room);
+    BuildPlayer();
     return 0;
 }
