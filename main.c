@@ -137,7 +137,7 @@ int main() {
     printf("Le milieu de la salle est [%d][%d]\n", y, x);
     PrintfRoom(room);
     AllRoom[0]=room;
-    room.Tab2D[y][x]='&';
+    room.Tab2D[y][x]='P';
     PrintfRoom(room);
     BuildPlayer();
     return 0;
