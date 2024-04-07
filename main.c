@@ -4,10 +4,11 @@
 
 #define MAXROOM 20
 
+
 typedef struct { // Create the type Room
-    int l; // width of the room
-    int L; // length of the room
-    char** Tab2D; //
+    int l; // Width of the room
+    int L; // Length of the room
+    char** Tab2D; // 2-dimensional table of the room
     char* Doors; // Coordinates of all the doors in the room
 } Room;
 
@@ -61,7 +62,6 @@ Room CreateRoom() { // Create the dimension of the room randomly
     }
 }
 
-
 Room CreateFirstRoom(){
     Room r;
     do {
@@ -91,7 +91,10 @@ int main() {
     int x=0;
     int y=0;
     GetMiddle(&x,&y,room);
-    printf("le milieu de la salle est [%d][%d]", x, y);
-    
+    printf("Le milieu de la salle est [%d][%d]\n", y, x);
+    PrintfRoom(room);
+    AllRoom[0]=room;
+    room.Tab2D[y][x]='&';
+    PrintfRoom(room);
     return 0;
 }
