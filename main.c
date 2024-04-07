@@ -6,7 +6,7 @@
 
 typedef struct { // Create the type Room
     int Dimension[2]; // Dimension l and L of the room
-    char* Coordinates; // Coordinates of the room
+    char** tab; // tableau 2d de la salle
     char* Doors; // Coordinates of all the doors in the room
 } Room;
 
@@ -29,31 +29,37 @@ void CreateRoom(Room* r) { // Create the dimension of the room randomly
     printf("Longueur : %d\n", L);
     printf("Largeur : %d\n", l);
 
-    r->Coordinates = malloc(l * L * sizeof(char)); // Allocate memory for room coordinates
-    if (r->Coordinates == NULL) {
-        printf("Erreur allocation de mémoire pour les coordonnées de la pièce\n");
-        exit(2);
-    }
-
     r->Dimension[0] = l; // Store dimensions
     r->Dimension[1] = L;
 
-    for (int i = 0; i < l; i++) { // Room padding for edges and corners
+    r->tab = malloc(l * sizeof(char*));
+    if (r->tab == NULL) {
+        printf("Erreur allocation de mémoire pour les coordonnées\n");
+        exit(1);
+    }
+
+    for (int i = 0; i < l; i++) { // Allocation de mémoire pour le tableau 2D
+        r->tab[i] = malloc(L * sizeof(char));
+        if (r->tab[i] == NULL) {
+            printf("Erreur allocation de mémoire pour les coordonnées\n");
+            exit(1);
+        }
+
         for (int j = 0; j < L; j++) {
             if (i == 0 && j == 0) {
-                r->Coordinates[i * L + j] = '1';
+                r->tab[i][j] = '1';
             } else if (i == 0 && j == L - 1) {
-                r->Coordinates[i * L + j] = '2';
+                r->tab[i][j] = '2';
             } else if (i == l - 1 && j == 0) {
-                r->Coordinates[i * L + j] = '3';
+                r->tab[i][j] = '3';
             } else if (i == l - 1 && j == L - 1) {
-                r->Coordinates[i * L + j] = '4';
+                r->tab[i][j] = '4';
             } else if (i == 0 || i == l - 1) {
-                r->Coordinates[i * L + j] = '-';
+                r->tab[i][j] = '-';
             } else if (j == 0 || j == L - 1) {
-                r->Coordinates[i * L + j] = '|';
+                r->tab[i][j] = '|';
             } else {
-                r->Coordinates[i * L + j] = ' ';
+                r->tab[i][j] = ' ';
             }
         }
     }
@@ -62,14 +68,10 @@ void CreateRoom(Room* r) { // Create the dimension of the room randomly
 void PrintfRoom(Room room){
     for (int i = 0; i < room.Dimension[0]; i++) {
         for (int j = 0; j < room.Dimension[1]; j++) {
-            printf("%c", room.Coordinates[i * room.Dimension[1] + j]);
+            printf("%c", room.tab[i][j]);
         }
         printf("\n");
     }
-}
-
-void FreeRoom(Room* r) {
-    free(r->Coordinates);
 }
 
 int main() {
@@ -83,8 +85,6 @@ int main() {
     Room room;
     CreateRoom(&room);
     PrintfRoom(room);
-
-    FreeRoom(&room);
 
     free(NumberOfRoom);
     return 0;
