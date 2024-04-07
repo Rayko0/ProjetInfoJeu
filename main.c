@@ -23,14 +23,18 @@ Room CreateRoom() { // Create the dimension of the room randomly
     Room r;
     L = rand() % 8 + 3; // Generate a random length between 3 and 10
     l = rand() % 8 + 3; // Generate a random length between 3 and 10
-    printf("Longueur : %d\n", L);
-    printf("Largeur : %d\n", l);
+    if (l - L > 2){ // Avoid corridor rooms
+        L+=4;
+    }
+    else if (L - l > 2){
+        l+=4;
+    }
 
     r.l = l; // Store dimensions
     r.L = L;
 
-    r->Tab2D = malloc(l * sizeof(char*));
-    if (r->Tab2D == NULL) {
+    r.Tab2D = malloc(l * sizeof(char*));
+    if (r.Tab2D == NULL) {
         printf("Erreur allocation de mémoire pour les coordonnées\n");
         exit(3);
     }
@@ -50,16 +54,17 @@ Room CreateRoom() { // Create the dimension of the room randomly
             } else if (i == l - 1 && j == 0) {
                 r.Tab2D[i][j] = '3';
             } else if (i == l - 1 && j == L - 1) {
-                r->Tab2D[i][j] = '4';
+                r.Tab2D[i][j] = '4';
             } else if (i == 0 || i == l - 1) {
-                r->Tab2D[i][j] = '-';
+                r.Tab2D[i][j] = '-';
             } else if (j == 0 || j == L - 1) {
-                r->Tab2D[i][j] = '|';
+                r.Tab2D[i][j] = '|';
             } else {
-                r->Tab2D[i][j] = ' ';
+                r.Tab2D[i][j] = ' ';
             }
         }
     }
+    return r;
 }
 
 Room CreateFirstRoom(){
@@ -71,12 +76,20 @@ Room CreateFirstRoom(){
 }
 
 void PrintfRoom(Room room){
+    printf("Largeur %d\n",room.l);
+    printf("Longueur : %d\n", room.L);
     for (int i = 0; i < room.l; i++) {
         for (int j = 0; j < room.L; j++) {
             printf("%c", room.Tab2D[i][j]);
         }
         printf("\n");
     }
+}
+
+void GetMiddle(int *x,int *y, Room room){
+
+    *x=room.L/2;
+    *y=room.l/2;
 }
 
 int main() {
@@ -86,7 +99,7 @@ int main() {
     Room* AllRoom= malloc(sizeof(Room)*NumberOfRoom);
 
     Room room;
-    CreateRoom(&room);
+    room=CreateFirstRoom();
     PrintfRoom(room);
     int x=0;
     int y=0;
