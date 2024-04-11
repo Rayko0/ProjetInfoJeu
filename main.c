@@ -17,7 +17,7 @@ typedef struct { // Create the type Room
 typedef struct{
     int x;
     int y;
-}Coordinates;
+} Coordinates;
 
 typedef struct { // Create the type Player
     char Name[MAX_NAME_LENGTH];
