@@ -4,7 +4,7 @@
 #include <string.h>
 
 #define MAXROOM 20
-#define MAX_NAME_LENGTH 25
+#define MAX_NAME_LENGTH 5
 
 
 typedef struct { // Create the type Room
@@ -136,6 +136,49 @@ void GetMiddle(int *x,int *y, Room room){
 
     *x=room.L/2;
     *y=room.l/2;
+
+}
+
+void Travel(Player* P1,Room room){
+    int choice;
+    printf("Quelle direction?\n Pour la gauche : 1\n Pour la droite : 2\n Pour en haut : 3\n Pour en bas : 4\n");
+    scanf("%d", &choice);
+    switch(choice){
+        case 1:
+            if (room.Tab2D[P1->Position.y][P1->Position.x - 1] == ' '){
+                room.Tab2D[P1->Position.y][P1->Position.x] = ' ';
+                P1->Position.x --;
+
+            }
+            else if (room.Tab2D[P1->Position.y][P1->Position.x - 1] == '|'){}
+            break;
+        case 2:
+            if (room.Tab2D[P1->Position.y][P1->Position.x + 1] == ' '){
+                room.Tab2D[P1->Position.y][P1->Position.x] = ' ';
+                P1->Position.x ++;
+
+            }
+            else if (room.Tab2D[P1->Position.y][P1->Position.x + 1] == '|'){}
+            break;
+
+        case 3:
+            if (room.Tab2D[P1->Position.y+1][P1->Position.x] == ' '){
+                room.Tab2D[P1->Position.y][P1->Position.x] = ' ';
+                P1->Position.y ++;
+
+            }
+            else if (room.Tab2D[P1->Position.y+1][P1->Position.x] == '-'){}
+            break;
+        case 4:
+            if (room.Tab2D[P1->Position.y-1][P1->Position.x] == ' '){
+                room.Tab2D[P1->Position.y][P1->Position.x] = ' ';
+                P1->Position.y --;
+
+            }
+            else if (room.Tab2D[P1->Position.y-1][P1->Position.x] == '-'){}
+            break;
+    }
+
 }
 
 int main() {
@@ -154,6 +197,10 @@ int main() {
     room.Tab2D[y][x]='P';
     PrintfRoom(room);
     player = BuildPlayer();
-
+    player.Position.x=x;
+    player.Position.y=y;
+    PrintfRoom(room,player);
+    Travel(&player, room);
+    PrintfRoom(room,player);
     return 0;
 }
