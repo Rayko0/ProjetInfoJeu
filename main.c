@@ -154,5 +154,6 @@ int main() {
     room.Tab2D[y][x]='P';
     PrintfRoom(room);
     player = BuildPlayer();
+
     return 0;
 }
