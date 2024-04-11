@@ -4,6 +4,7 @@
 #include <string.h>
 
 #define MAXROOM 20
+#define MAX_NAME_LENGTH 25
 
 
 typedef struct { // Create the type Room
@@ -19,7 +20,7 @@ typedef struct{
 }Coordinates;
 
 typedef struct { // Create the type Player
-    char Name[100];
+    char Name[MAX_NAME_LENGTH];
     float Health;
     float Attack;
     float Exp;
@@ -28,13 +29,24 @@ typedef struct { // Create the type Player
 
 Player BuildPlayer(){
     Player P1;
-    int res = -1;
-    printf("Donnez votre pseudo.\n");
-    res = scanf("%s", P1.Name);
-    while(res<1 && strlen(P1.Name)>100) {
-        printf("Donnez un pseudo valide.\n");
-        res = scanf("%s", P1.Name);
-    }
+
+    do {
+        printf("Donnez votre pseudo :\n");
+        scanf("%s", P1.Name);
+        size_t len = strlen(P1.Name);
+        if (P1.Name == NULL) {
+            printf("Erreur lors de la saisie du pseudo.\n");
+            exit(4);
+        }
+        if (len > 0 && P1.Name[len - 1] == '\n') {
+            P1.Name[strlen(P1.Name) - 1] = '\0';
+        }
+        // Vérifier la longueur du pseudo
+        if (len > MAX_NAME_LENGTH) {
+            printf("Le pseudo ne peut pas dépasser %d caractères. Veuillez réessayer.\n", MAX_NAME_LENGTH);
+        }
+    } while (strlen(P1.Name) > MAX_NAME_LENGTH);
+
     P1.Health = 100;
     P1.Attack = 10;
     P1.Exp=0;
@@ -126,19 +138,17 @@ int main() {
     srand(time(NULL));
     int NumberOfRoom = GenerateNumberOfRoom();
     printf("Nombre de pièce dans la partie : %d\n", NumberOfRoom);
-    Room* AllRoom= malloc(sizeof(Room)*NumberOfRoom);
-
+    Room* AllRoom = malloc(sizeof(Room)*NumberOfRoom);
     Room room;
-    room=CreateFirstRoom();
-    PrintfRoom(room);
-    int x=0;
-    int y=0;
+    Player player;
+    room = CreateFirstRoom();
+    int x = 0;
+    int y = 0;
     GetMiddle(&x,&y,room);
     printf("Le milieu de la salle est [%d][%d]\n", y, x);
-    PrintfRoom(room);
-    AllRoom[0]=room;
+    AllRoom[0] = room;
     room.Tab2D[y][x]='P';
     PrintfRoom(room);
-    BuildPlayer();
+    player = BuildPlayer();
     return 0;
 }
