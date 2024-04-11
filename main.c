@@ -25,6 +25,7 @@ typedef struct { // Create the type Player
     float Attack;
     float Exp;
     Coordinates Position;
+    char skin;
 } Player;
 
 Player BuildPlayer(){
@@ -52,6 +53,9 @@ Player BuildPlayer(){
     P1.Exp=0;
     P1.Position.x=0;
     P1.Position.y=0;
+    P1.skin='^';
+
+    return P1;
 }
 
 int GenerateNumberOfRoom(){ // Generate a random number of room between 10 and MAXROOM in a pointer to an integer
