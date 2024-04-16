@@ -21,12 +21,26 @@ typedef struct{
 
 typedef struct { // Create the type Player
     char Name[MAX_NAME_LENGTH];
-    float Health;
-    float Attack;
+    float Hp;
+    float Atk;
     float Exp;
     Coordinates Position;
     char skin;
 } Player;
+
+typedef struct{
+    char skin;
+    float Hp;
+    float Atk;
+    Coordinates Position;
+}Mob;
+
+Mob BuildMob(){
+    Mob Mob;
+    Mob.Hp=25;
+    Mob.Atk=5;
+    Mob.skin='*';
+}
 
 Player BuildPlayer(){
     Player P1;
@@ -48,12 +62,12 @@ Player BuildPlayer(){
         }
     } while (strlen(P1.Name) > MAX_NAME_LENGTH);
 
-    P1.Health = 100;
-    P1.Attack = 10;
+    P1.Hp = 100;
+    P1.Atk = 10;
     P1.Exp=0;
     P1.Position.x=0;
     P1.Position.y=0;
-    P1.skin='^';
+    P1.skin='P';
 
     return P1;
 }
@@ -141,13 +155,16 @@ void GetMiddle(int *x,int *y, Room room){
 
 void Travel(Player* P1,Room room){
     int choice;
-    printf("Quelle direction?\n Pour la gauche : 1\n Pour la droite : 2\n Pour en haut : 3\n Pour en bas : 4\n");
+    do{
+    printf("Quelle direction?\n Pour la gauche : 1\n Pour la droite : 2\n Pour en bas : 3\n Pour en haut : 4\n");
     scanf("%d", &choice);
+    }while(choice<1 || choice>4);
     switch(choice){
         case 1:
             if (room.Tab2D[P1->Position.y][P1->Position.x - 1] == ' '){
                 room.Tab2D[P1->Position.y][P1->Position.x] = ' ';
                 P1->Position.x --;
+                room.Tab2D[P1->Position.y][P1->Position.x]=P1->skin;
 
             }
             else if (room.Tab2D[P1->Position.y][P1->Position.x - 1] == '|'){}
@@ -156,7 +173,7 @@ void Travel(Player* P1,Room room){
             if (room.Tab2D[P1->Position.y][P1->Position.x + 1] == ' '){
                 room.Tab2D[P1->Position.y][P1->Position.x] = ' ';
                 P1->Position.x ++;
-
+                room.Tab2D[P1->Position.y][P1->Position.x]=P1->skin;
             }
             else if (room.Tab2D[P1->Position.y][P1->Position.x + 1] == '|'){}
             break;
@@ -165,7 +182,7 @@ void Travel(Player* P1,Room room){
             if (room.Tab2D[P1->Position.y+1][P1->Position.x] == ' '){
                 room.Tab2D[P1->Position.y][P1->Position.x] = ' ';
                 P1->Position.y ++;
-
+                room.Tab2D[P1->Position.y][P1->Position.x]=P1->skin;
             }
             else if (room.Tab2D[P1->Position.y+1][P1->Position.x] == '-'){}
             break;
@@ -173,7 +190,7 @@ void Travel(Player* P1,Room room){
             if (room.Tab2D[P1->Position.y-1][P1->Position.x] == ' '){
                 room.Tab2D[P1->Position.y][P1->Position.x] = ' ';
                 P1->Position.y --;
-
+                room.Tab2D[P1->Position.y][P1->Position.x]=P1->skin;
             }
             else if (room.Tab2D[P1->Position.y-1][P1->Position.x] == '-'){}
             break;
@@ -184,23 +201,32 @@ void Travel(Player* P1,Room room){
 int main() {
     srand(time(NULL));
     int NumberOfRoom = GenerateNumberOfRoom();
-    printf("Nombre de pièce dans la partie : %d\n", NumberOfRoom);
+    printf("Nombre de salle dans la partie : %d\n", NumberOfRoom);
     Room* AllRoom = malloc(sizeof(Room)*NumberOfRoom);
     Room room;
-    Player player;
     room = CreateFirstRoom();
+    Player player;
+    player = BuildPlayer();
     int x = 0;
     int y = 0;
     GetMiddle(&x,&y,room);
     printf("Le milieu de la salle est [%d][%d]\n", y, x);
     AllRoom[0] = room;
-    room.Tab2D[y][x]='P';
+    room.Tab2D[y][x]=player.skin;
     PrintfRoom(room);
-    player = BuildPlayer();
     player.Position.x=x;
     player.Position.y=y;
-    PrintfRoom(room,player);
+    PrintfRoom(room);
     Travel(&player, room);
-    PrintfRoom(room,player);
+    PrintfRoom(room);
+    int stop=0;
+    do{
+        Travel(&player, room);
+        PrintfRoom(room);
+        do {
+            printf("veux tu arreter ? 1oui et 0non");
+            scanf("%d", &stop);
+        } while (stop!=0 && stop!=1);
+    } while (stop!=1);
     return 0;
 }
