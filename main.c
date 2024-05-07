@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include <time.h>
 #include <string.h>
+#include <wchar.h>
 
 #define MAXROOM 20
 #define MAX_NAME_LENGTH 5
@@ -19,7 +20,7 @@ typedef struct{
 typedef struct { // Create the type Room
     int l; // Width of the room
     int L; // Length of the room
-    char** Tab2D; // 2-dimensional table of the room
+    int** Tab2D; // 2-dimensional table of the room
     Door TabDoor[4]; //Door of the room: 0 is the north room, 1 = east, 2 = south, 3 = west
     Door * TabConnectedDoor[4]; // Still the same but each slot is for a door in another room
     int RoomIndex;
@@ -36,7 +37,7 @@ typedef struct { // Create the type Player
 } Player;
 
 typedef struct{
-    char skin;
+    int skin;
     float Hp;
     float Atk;
     Coordinates Position;
@@ -75,7 +76,7 @@ Player BuildPlayer(){
     P1.Exp=0;
     P1.Position.x=0;
     P1.Position.y=0;
-    P1.skin='P';
+    P1.skin=2;
 
     return P1;
 }
@@ -89,8 +90,8 @@ int GenerateNumberOfRoom(){ // Generate a random number of room between 10 and M
 Room CreateRoom() {
     int l, L;
     Room r;
-    L = rand() % 8 + 3; // Générer une longueur aléatoire entre 3 et 10
-    l = rand() % 8 + 3; // Générer une largeur aléatoire entre 3 et 10
+    L = rand() % 22 + 3; // Générer une longueur aléatoire entre 3 et 10
+    l = rand() % 22 + 3; // Générer une largeur aléatoire entre 3 et 10
 
     // Ajuster les dimensions si nécessaire pour éviter les salles de type couloir
     if (l - L > 2) {
@@ -103,14 +104,14 @@ Room CreateRoom() {
     r.L = L;
 
     // Allouer de la mémoire pour le tableau 2D
-    r.Tab2D = malloc(l * sizeof(char*));
+    r.Tab2D = malloc(l * sizeof(int*));
     if (r.Tab2D == NULL) {
         printf("Erreur allocation de mémoire pour les coordonnées\n");
         exit(3);
     }
 
     for (int i = 0; i < l; i++) {
-        r.Tab2D[i] = malloc(L * sizeof(char));
+        r.Tab2D[i] = malloc(L * sizeof(int));
         if (r.Tab2D[i] == NULL) {
             printf("Erreur allocation de mémoire pour les coordonnées\n");
             exit(1);
@@ -119,11 +120,14 @@ Room CreateRoom() {
         for (int j = 0; j < L; j++) {
             // Remplir le tableau 2D avec les caractères
             if (i == 0 || i == l - 1) {
-                r.Tab2D[i][j] = '-';
-            } else if (j == 0 || j == L - 1) {
-                r.Tab2D[i][j] = '|';
-            } else {
-                r.Tab2D[i][j] = ' ';
+                r.Tab2D[i][j] = 5;
+            }
+            else if (j == 0 || j == L - 1) {
+                r.Tab2D[i][j] = 6;
+            }
+            
+            else {
+                r.Tab2D[i][j] = 0;
             }
         }
     }
@@ -157,12 +161,26 @@ Room CreateFirstRoom(){
     return r;
 }
 
-void PrintfRoom(Room room){
+void PrintfRoom(Room r){
     //printf("Largeur %d\n",room.l);
     //printf("Longueur : %d\n", room.L);
-    for (int i = 0; i < room.l; i++) {
-        for (int j = 0; j < room.L; j++) {
-            printf("%c", room.Tab2D[i][j]);
+    for (int i = 0; i < r.l; i++) {
+        for (int j = 0; j < r.L; j++) {
+            if (i == 0 || i == r.l - 1) {
+                printf("\U0001F60A");
+            }
+            else if (j == 0 || j == r.L - 1) {
+                printf("\U0001F31F");
+                
+         
+            } 
+            else if (r.Tab2D[i][j]==2) {
+                printf("P ");
+            }
+            else {
+                printf("  ");
+            }
+      
         }
         printf("\n");
     }
@@ -173,68 +191,6 @@ void GetMiddle(int *x,int *y, Room room){
     *x=room.L/2;
     *y=room.l/2;
 
-}
-
-Door findDoor(Room CurrentRoom, Player P1){
-    Door thedoor;
-    for(int i=0;i<CurrentRoom.L;i++){
-        for(int j=0;j<CurrentRoom.l;j++){
-            if(P1.Position.x==CurrentRoom.TabDoor[1].position.x && P1.Position.y==CurrentRoom.TabDoor[1].position.y ){
-                thedoor.position.x=CurrentRoom.TabDoor[1].position.x;
-                thedoor.position.y=CurrentRoom.TabDoor[1].position.y;
-            }
-            if(P1.Position.x==CurrentRoom.TabDoor[3].position.x && P1.Position.y==CurrentRoom.TabDoor[3].position.y ){
-                thedoor.position.x=CurrentRoom.TabDoor[3].position.x;
-                thedoor.position.y=CurrentRoom.TabDoor[3].position.y;
-            }
-            if(P1.Position.x==CurrentRoom.TabDoor[0].position.x && P1.Position.y==CurrentRoom.TabDoor[0].position.y ){
-                thedoor.position.x=CurrentRoom.TabDoor[0].position.x;
-                thedoor.position.y=CurrentRoom.TabDoor[0].position.y;
-            }
-            if(P1.Position.x==CurrentRoom.TabDoor[2].position.x && P1.Position.y==CurrentRoom.TabDoor[2].position.y ){
-                thedoor.position.x=CurrentRoom.TabDoor[2].position.x;
-                thedoor.position.y=CurrentRoom.TabDoor[2].position.y;
-            }
-        }
-    }
-    return thedoor;
-}
-
-void roomCreationInGame(Room CurrentRoom, Player P1, Room** Wolrd) {
-    Room NextRoom = CreateRoom();
-    Door CurrentDoor = findDoor(CurrentRoom, P1);
-    if(CurrentDoor.DoorIndex==0){
-        CurrentRoom.TabConnectedDoor[0]=&NextRoom.TabDoor[2];
-        NextRoom.TabConnectedDoor[2]=&CurrentRoom.TabDoor[0];
-    }
-    else if(CurrentDoor.DoorIndex==1){
-        CurrentRoom.TabConnectedDoor[1]=&NextRoom.TabDoor[3];
-        NextRoom.TabConnectedDoor[3]=&CurrentRoom.TabDoor[1];
-    }
-    else if(CurrentDoor.DoorIndex==2){
-        CurrentRoom.TabConnectedDoor[2]=&NextRoom.TabDoor[0];
-        NextRoom.TabConnectedDoor[0]=&CurrentRoom.TabDoor[2];
-    }
-    else if(CurrentDoor.DoorIndex==3){
-        CurrentRoom.TabConnectedDoor[3]=&NextRoom.TabDoor[1];
-        NextRoom.TabConnectedDoor[1]=&CurrentRoom.TabDoor[3];
-    }
-
-    //continuer et faire un switch en mode si je prend port nord j'arrive porte sud
-    //et après tu claque un coup d'affichage et tu guettes
-
-}
-
-void doorInteraction(Room CurrentRoom,Player P1, Room** Wolrd){
-    int choice;
-    printf("voulez vous allez dans la prochaine salle ? 1oui 0non");
-    scanf("%d",&choice);
-    if(choice==1){
-        roomCreationInGame()
-    }
-    else{
-        return;
-    }
 }
 
 void Travel(Player* P1,Room room){
