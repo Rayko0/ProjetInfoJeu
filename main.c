@@ -14,6 +14,7 @@ typedef struct{
 typedef struct{
     Coordinates position; // Les coordonnées de la porte dans la salle
     int DoorIndex;
+    int NextRoomIndex;
 } Door;
 
 typedef struct { // Create the type Room
@@ -22,7 +23,7 @@ typedef struct { // Create the type Room
     char** Tab2D; // 2-dimensional table of the room
     Door TabDoor[4]; //Door of the room: 0 is the north room, 1 = east, 2 = south, 3 = west
     Door * TabConnectedDoor[4]; // Still the same but each slot is for a door in another room
-    int RoomIndex;
+    int roomIndex;
 } Room;
 
 typedef struct { // Create the type Player
@@ -153,6 +154,11 @@ Room CreateRoom() {
     r.TabConnectedDoor[1]=NULL;
     r.TabConnectedDoor[2]=NULL;
     r.TabConnectedDoor[3]=NULL;
+    r.TabDoor[0].NextRoomIndex=-1;
+    r.TabDoor[1].NextRoomIndex=-1;
+    r.TabDoor[2].NextRoomIndex=-1;
+    r.TabDoor[3].NextRoomIndex=-1;
+    r.roomIndex=0;
     return r;
 }
 
@@ -170,6 +176,7 @@ void PrintfRoom(Player * P1){
     //printf("Longueur : %d\n", room.L);
     printf("Coo du joueur : %d x , %d y\n",P1->Position.x,P1->Position.y);
     printf("Adresse de la salle du joueur : %p\n",P1->room);
+    printf("Joueur est dans la salle %d\n",P1->room->roomIndex);
     for (int i = 0; i < P1->room->l; i++) {
         for (int j = 0; j < P1->room->L; j++) {
 
@@ -203,7 +210,7 @@ Door findDoor(Player *P1) {
 }
 
 
-void roomCreationInGame(Player *P1, Room** World) {
+void roomCreationInGame(Player *P1, Room** World,int  cpt) {
     // Allouer de la mémoire pour la nouvelle salle
     Room *NextRoom = (Room*)malloc(sizeof(Room));
     if (NextRoom == NULL) {
@@ -215,7 +222,7 @@ void roomCreationInGame(Player *P1, Room** World) {
     *NextRoom = CreateRoom();
 
     // Mettre à jour le tableau World avec un pointeur vers la nouvelle salle
-    World[1] = NextRoom;
+    World[cpt] = NextRoom;
 
     // Trouver la porte par laquelle le joueur entre dans la nouvelle salle
     Door CurrentDoor = findDoor(P1);
@@ -230,6 +237,9 @@ void roomCreationInGame(Player *P1, Room** World) {
             // Définir les coordonnées du joueur dans la nouvelle salle
             P1->Position.x = P1->room->TabConnectedDoor[0]->position.x;
             P1->Position.y = P1->room->TabConnectedDoor[0]->position.y;
+            P1->room->TabDoor[0].NextRoomIndex=cpt;
+            NextRoom->TabDoor[2].NextRoomIndex=cpt-1;
+            NextRoom->roomIndex=cpt;
             break;
         case 1:
             // Le joueur entre par la porte est de la salle actuelle
@@ -238,6 +248,9 @@ void roomCreationInGame(Player *P1, Room** World) {
             // Définir les coordonnées du joueur dans la nouvelle salle
             P1->Position.x = P1->room->TabConnectedDoor[1]->position.x;
             P1->Position.y = P1->room->TabConnectedDoor[1]->position.y;
+            P1->room->TabDoor[1].NextRoomIndex=cpt;
+            NextRoom->TabDoor[3].NextRoomIndex=cpt-1;
+            NextRoom->roomIndex=cpt;
             break;
         case 2:
             // Le joueur entre par la porte sud de la salle actuelle
@@ -246,6 +259,9 @@ void roomCreationInGame(Player *P1, Room** World) {
             // Définir les coordonnées du joueur dans la nouvelle salle
             P1->Position.x = P1->room->TabConnectedDoor[2]->position.x;
             P1->Position.y = P1->room->TabConnectedDoor[2]->position.y;
+            P1->room->TabDoor[2].NextRoomIndex=cpt;
+            NextRoom->TabDoor[0].NextRoomIndex=cpt-1;
+            NextRoom->roomIndex=cpt;
             break;
         case 3:
             // Le joueur entre par la porte ouest de la salle actuelle
@@ -254,6 +270,9 @@ void roomCreationInGame(Player *P1, Room** World) {
             // Définir les coordonnées du joueur dans la nouvelle salle
             P1->Position.x = P1->room->TabConnectedDoor[3]->position.x;
             P1->Position.y = P1->room->TabConnectedDoor[3]->position.y;
+            P1->room->TabDoor[3].NextRoomIndex=cpt;
+            NextRoom->TabDoor[1].NextRoomIndex=cpt-1;
+            NextRoom->roomIndex=cpt;
             break;
         default:
             // Gérer le cas où l'index de la porte n'est pas valide
@@ -262,17 +281,17 @@ void roomCreationInGame(Player *P1, Room** World) {
     }
 
     // Mettre à jour la salle actuelle du joueur avec la nouvelle salle
-    P1->room = World[1];
+    P1->room = World[cpt];
     // Mettre à jour l'affichage du joueur dans la nouvelle salle
     P1->room->Tab2D[P1->Position.y][P1->Position.x] = P1->skin;
 }
 
-void doorInteraction(Player* P1, Room** World){
+void doorInteraction(Player* P1, Room** World,int  cpt){
     int choice;
     printf("Voulez-vous aller dans la prochaine salle ? 1 oui 0 non\n");
     scanf("%d", &choice);
     if(choice == 1){
-        roomCreationInGame(P1, World);
+        roomCreationInGame(P1, World,cpt);
     }
     else{
         return;
@@ -280,14 +299,14 @@ void doorInteraction(Player* P1, Room** World){
 }
 
 
-void Travel(Player* P1,Room ** World){
+void Travel(Player* P1,Room ** World,int * cpt){
     int choice;
     do{
         printf("-----------------------------------------------------------------------------------------------\n");
-        printf("Quelle direction? A gauche : 1  A droite : 2  En bas : 3  En haut : 4  Quitter : 0\n");
+        printf("     Quelle direction? A gauche : 1  A droite : 2  En bas : 3  En haut : 4  Quitter : 0     \n");
         printf("-----------------------------------------------------------------------------------------------\n");
         scanf("%d", &choice);
-    }while(choice<1 || choice>4);
+    }while(choice<0 || choice>4);
     switch(choice){
         case 1:
             if (P1->room->Tab2D[P1->Position.y][P1->Position.x - 1] == ' '){
@@ -303,13 +322,15 @@ void Travel(Player* P1,Room ** World){
             else if (P1->room->Tab2D[P1->Position.y][P1->Position.x - 1] == '['){
                 P1->room->Tab2D[P1->Position.y][P1->Position.x] = ' ';
                 if(P1->room->TabConnectedDoor[3]==NULL) {
+                    (*cpt)++;
                     P1->Position.x = P1->Position.x - 1;
-                    doorInteraction(P1, World);
+                    doorInteraction(P1, World,*cpt);
+
                 }
                 else{
                     P1->Position.x = P1->room->TabConnectedDoor[3]->position.x;
                     P1->Position.y = P1->room->TabConnectedDoor[3]->position.y;
-                    P1->room = World[0];
+                    P1->room = World[P1->room->TabDoor[3].NextRoomIndex];
                     P1->room->Tab2D[P1->Position.y][P1->Position.x] = P1->skin;
                 }
             }
@@ -327,13 +348,15 @@ void Travel(Player* P1,Room ** World){
             else if (P1->room->Tab2D[P1->Position.y][P1->Position.x + 1] == '['){
                 P1->room->Tab2D[P1->Position.y][P1->Position.x] = ' ';
                 if(P1->room->TabConnectedDoor[1]==NULL) {
+                    (*cpt)++;
                     P1->Position.x = P1->Position.x + 1;
-                    doorInteraction(P1, World);
+                    doorInteraction(P1, World,*cpt);
+
                 }
                 else{
                     P1->Position.x = P1->room->TabConnectedDoor[1]->position.x;
                     P1->Position.y = P1->room->TabConnectedDoor[1]->position.y;
-                    P1->room = World[0];
+                    P1->room = World[P1->room->TabDoor[1].NextRoomIndex];
                     P1->room->Tab2D[P1->Position.y][P1->Position.x] = P1->skin;
                 }
             }
@@ -352,13 +375,15 @@ void Travel(Player* P1,Room ** World){
             else if (P1->room->Tab2D[P1->Position.y+1][P1->Position.x] == '['){
                 P1->room->Tab2D[P1->Position.y][P1->Position.x] = ' ';
                 if(P1->room->TabConnectedDoor[2]==NULL) {
+                    (*cpt)++;
                     P1->Position.x = P1->Position.y + 1;
-                    doorInteraction(P1, World);
+                    doorInteraction(P1, World,*cpt);
+
                 }
                 else{
                     P1->Position.x = P1->room->TabConnectedDoor[2]->position.x;
                     P1->Position.y = P1->room->TabConnectedDoor[2]->position.y;
-                    P1->room = World[0];
+                    P1->room = World[P1->room->TabDoor[2].NextRoomIndex];
                     P1->room->Tab2D[P1->Position.y][P1->Position.x] = P1->skin;
                 }
             }
@@ -376,13 +401,15 @@ void Travel(Player* P1,Room ** World){
             else if (P1->room->Tab2D[P1->Position.y-1][P1->Position.x] == '['){
                 P1->room->Tab2D[P1->Position.y][P1->Position.x] = ' ';
                 if(P1->room->TabConnectedDoor[0]==NULL) {
+                    (*cpt)++;
                     P1->Position.y = P1->Position.y - 1;
-                    doorInteraction(P1, World);
+                    doorInteraction(P1, World,*cpt);
+
                 }
                 else{
                     P1->Position.x = P1->room->TabConnectedDoor[0]->position.x;
                     P1->Position.y = P1->room->TabConnectedDoor[0]->position.y;
-                    P1->room = World[0];
+                    P1->room = World[P1->room->TabDoor[0].NextRoomIndex];
                     P1->room->Tab2D[P1->Position.y][P1->Position.x] = P1->skin;
                 }
             }
@@ -411,16 +438,13 @@ int main() {
     room.Tab2D[y][x]=player.skin;
     player.Position.x=x;
     player.Position.y=y;
+    int cpt=0;
     PrintfRoom(&player);
-    Travel(&player,&World);
-    PrintfRoom(&player);
-    int stop=0;
-
     do{
-        Travel(&player,&World);
+        Travel(&player,&World,&cpt);
         PrintfRoom(&player);
 
-    } while (stop!=1);
+    }while (cpt<NumberOfRoom);
 
 
     return 0;
