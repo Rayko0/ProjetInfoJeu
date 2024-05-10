@@ -153,10 +153,10 @@ Room CreateRoom() {
     r.TabDoor[3].position.y = rand() % (l - 2) + 1;
     r.TabDoor[3].DoorIndex = 3;
 
-    r.Tab2D[0][r.TabDoor[0].position.x] = '7';
-    r.Tab2D[l - 1][r.TabDoor[2].position.x] = '8';
-    r.Tab2D[r.TabDoor[1].position.y][L - 1] = '9';
-    r.Tab2D[r.TabDoor[3].position.y][0] = '10';
+    r.Tab2D[0][r.TabDoor[0].position.x] = 'N';
+    r.Tab2D[l - 1][r.TabDoor[2].position.x] = 'S';
+    r.Tab2D[r.TabDoor[1].position.y][L - 1] = 'E';
+    r.Tab2D[r.TabDoor[3].position.y][0] = 'W';
 
     r.TabConnectedDoor[0]=NULL;
     r.TabConnectedDoor[1]=NULL;
@@ -212,16 +212,16 @@ void PrintfRoom(Player * P1){
             if(P1->room->Tab2D[i][j]=='6'){
                 printf("\U00002550");
             }
-            if(P1->room->Tab2D[i][j]=='7'){
+            if(P1->room->Tab2D[i][j]=='N'){
                 printf("H");
             }
-            if(P1->room->Tab2D[i][j]=='8'){
+            if(P1->room->Tab2D[i][j]=='S'){
                 printf("B");
             }
-            if(P1->room->Tab2D[i][j]=='9'){
+            if(P1->room->Tab2D[i][j]=='E'){
                 printf("D");
             }
-            if(P1->room->Tab2D[i][j]=='10'){
+            if(P1->room->Tab2D[i][j]=='W'){
                 printf("G");
             }
 
