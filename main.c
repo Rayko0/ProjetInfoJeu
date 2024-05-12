@@ -384,9 +384,10 @@ void Travel(Player* P1,Room ** World,int * cpt){
                "\U000025CF"
                "\n");
         printf("                                       STATISTIQUES\n"
-               "                         Partie de : s \n"
-               "                         Health : \n"
-               "                         Attack : d \n");
+               "                         Partie de : %s \n"
+               "                         Health : %.2f\n"
+               "                         Attack : %.2f\n"
+               "                         Exp : %.2f\n", P1->Name, P1->Hp, P1->Atk, P1->Exp);
         printf("\U000025CF"
                "\U000025BF\U000025BF\U000025BF\U000025BF\U000025BF\U000025BF\U000025BF\U000025BF\U000025BF\U000025BF"
                "\U000025BF\U000025BF\U000025BF\U000025BF\U000025BF\U000025BF\U000025BF\U000025BF\U000025BF\U000025BF"
