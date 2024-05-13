@@ -89,11 +89,18 @@ int GenerateNumberOfRoom(){ // Generate a random number of room between 10 and M
 Room CreateRoom() {
     int l, L;
     Room r;
-    L = rand() % 8 + 3; // Générer une longueur aléatoire entre 3 et 10
-    l = rand() % 8 + 3; // Générer une largeur aléatoire entre 3 et 10
+    L = rand() % 8 + 5; // Générer une longueur aléatoire entre 3 et 11
+    l = rand() % 8 + 5; // Générer une largeur aléatoire entre 3 et 11
 
     // Ajuster les dimensions si nécessaire pour éviter les salles de type couloir
-    if (l - L > 2) {
+    if (l <= 7 && L <= 7) {
+        // Si les dimensions sont petites, augmentez l'une des dimensions
+        if (rand() % 2 == 0) {
+            L += 4;
+        } else {
+            l += 4;
+        }
+    } else if (l - L > 2) {
         L += 4;
     } else if (L - l > 2) {
         l += 4;
