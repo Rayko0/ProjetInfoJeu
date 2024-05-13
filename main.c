@@ -180,6 +180,7 @@ Room CreateFirstRoom(){
 }
 
 void PrintfRoom(Player * P1){
+    printf("\033c");
     //printf("Largeur %d\n",room.l);
     //printf("Longueur : %d\n", room.L);
     printf("Coo du joueur : %d x , %d y\n",P1->Position.x,P1->Position.y);
@@ -227,9 +228,9 @@ void PrintfRoom(Player * P1){
 
 
         }
-        printf("\n\n");
+        printf("\n");
     }
-
+    printf("\n");
 }
 
 void GetMiddle(int *x,int *y, Room room){
@@ -498,6 +499,7 @@ void Travel(Player* P1,Room ** World,int * cpt){
 
 int main() {
     srand(time(NULL));
+    printf("\033c");
     int NumberOfRoom = GenerateNumberOfRoom();
     printf("Nombre de salle dans la partie : %d\n", NumberOfRoom);
     Room* World = malloc(sizeof(Room)*NumberOfRoom);
