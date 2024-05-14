@@ -1,2 +1,2 @@
-gcc -o main main.c fonction.c
-si tu veux gcc avec les 3 fichiers
+si tu fais plusieurs déplacements dans la direction d'une porte et que ça va plus loin que la porte seg fault
+renfo les scanf
