@@ -266,7 +266,7 @@ void roomCreationInGame(Player *P1, Room** World,int  cpt) {
             NextRoom->TabDoor[0].NextRoomIndex=P1->room->roomIndex;
             NextRoom->roomIndex=cpt;
             break;
-	case 3:
+        case 3:
             // Le joueur entre par la porte ouest de la salle actuelle
             P1->room->TabConnectedDoor[3] = &(NextRoom->TabDoor[1]);
             NextRoom->TabConnectedDoor[1] = &(P1->room->TabDoor[3]);
@@ -277,7 +277,7 @@ void roomCreationInGame(Player *P1, Room** World,int  cpt) {
             NextRoom->TabDoor[1].NextRoomIndex=P1->room->roomIndex;
             NextRoom->roomIndex=cpt;
             break;
-	default:
+        default:
             // Gérer le cas où l'index de la porte n'est pas valide
             printf("Erreur: Index de porte invalide.\n");
             break;
@@ -307,25 +307,24 @@ void Travel(Player* P1,Room ** World,int * cpt){
         printf("\033[33m\U0000256D"
                "\U00002500\U00002500\U00002500\U00002500\U00002500\U00002500\U00002500\U00002500\U00002500\U00002500"
                "\U00002500\U00002500\U00002500\U00002500\U00002500\U00002500\U00002500\U00002500\U00002500\U00002500"
-               "\U00002500\U00002500\U00002500"
+               "\U00002500"
                "\U0000256E\033[0m"
                "\n");
-        printf("\033[33m\U00002502  Quelle direction?    \U00002502\033[0m\n"
-               "\033[33m\U00002502\033[0m  \U000025B2 : z                \033[33m\U00002502\033[0m\n"
-               "\033[33m\U00002502\033[0m  \U000025C0 : q                \033[33m\U00002502\033[0m\n"
-               "\033[33m\U00002502\033[0m  \U000025BC : s                \033[33m\U00002502\033[0m\n"
-               "\033[33m\U00002502\033[0m  \U000025B6 : d                \033[33m\U00002502\033[0m\n"
-               "\033[33m\U00002502\033[0m  Quitter : 0          \033[33m\U00002502\033[0m\n");
+        printf("\033[33m\U00002502  Quelle direction?  \U00002502\033[0m\n"
+               "\033[33m\U00002502\033[0m  \U000025B2 : z              \033[33m\U00002502\033[0m\n"
+               "\033[33m\U00002502\033[0m  \U000025C0 : q              \033[33m\U00002502\033[0m\n"
+               "\033[33m\U00002502\033[0m  \U000025BC : s              \033[33m\U00002502\033[0m\n"
+               "\033[33m\U00002502\033[0m  \U000025B6 : d              \033[33m\U00002502\033[0m\n"
+               "\033[33m\U00002502\033[0m  Quitter : 0        \033[33m\U00002502\033[0m\n");
         printf("\033[33m\U00002570"
                "\U00002500\U00002500\U00002500\U00002500\U00002500\U00002500\U00002500\U00002500\U00002500\U00002500"
                "\U00002500\U00002500\U00002500\U00002500\U00002500\U00002500\U00002500\U00002500\U00002500\U00002500"
-               "\U00002500\U00002500\U00002500"
+               "\U00002500"
                "\U0000256F\033[0m"
                "\n\n");
         printf("\033[35m\U000025CF"
                "\U000025BF\U000025BF\U000025BF\U000025BF\U000025BF\U000025BF\U000025BF\U000025BF\U000025BF\U000025BF"
                "\U000025BF\U000025BF\U000025BF\U000025BF\U000025BF\U000025BF\U000025BF\U000025BF\U000025BF\U000025BF"
-               "\U000025BF\U000025BF"
                "\U000025CF\033[0m"
                "\n");
         printf("     \033[35mSTATISTIQUES\033[0m\n"
@@ -336,7 +335,6 @@ void Travel(Player* P1,Room ** World,int * cpt){
         printf("\033[35m\U000025CF"
                "\U000025BF\U000025BF\U000025BF\U000025BF\U000025BF\U000025BF\U000025BF\U000025BF\U000025BF\U000025BF"
                "\U000025BF\U000025BF\U000025BF\U000025BF\U000025BF\U000025BF\U000025BF\U000025BF\U000025BF\U000025BF"
-               "\U000025BF\U000025BF"
                "\U000025CF\033[0m"
                "\n\n");
         scanf("%c", &choice);
@@ -452,5 +450,6 @@ void Travel(Player* P1,Room ** World,int * cpt){
             exit(0);
         default:
             printf("Choix invalide? Veuillez réessayer.\n");
+	    break;
     }
 }
