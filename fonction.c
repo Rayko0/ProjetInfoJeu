@@ -277,8 +277,6 @@ void doorInteraction(Player* P1, Room** World,int  cpt){
 
 void Travel(Player* P1,Room ** World,int * cpt){
     char choice;
-    do{
-	scanf("%c", &choice);
         printf("\033[33m\U0000256D"
                "\U00002500\U00002500\U00002500\U00002500\U00002500\U00002500\U00002500\U00002500\U00002500\U00002500"
                "\U00002500\U00002500\U00002500\U00002500\U00002500\U00002500\U00002500\U00002500\U00002500\U00002500"
@@ -312,7 +310,7 @@ void Travel(Player* P1,Room ** World,int * cpt){
                "\U000025BF\U000025BF\U000025BF\U000025BF\U000025BF\U000025BF\U000025BF\U000025BF\U000025BF\U000025BF"
                "\U000025CF\033[0m"
                "\n\n");
-    }while(choice!='z' && choice!='q' && choice!='s' && choice!='d' && choice!='0');
+	scanf("%c", &choice);
     switch(choice){
         case 'q':
             if (P1->room->Tab2D[P1->Position.y][P1->Position.x - 1] == '0'){
@@ -422,6 +420,7 @@ void Travel(Player* P1,Room ** World,int * cpt){
             break;
         case '0':
             exit(0);
+            break;
         default:
             printf("Choix invalide? Veuillez réessayer.\n");
 	    break;
