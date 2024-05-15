@@ -1,5 +1,5 @@
+#include "menuInGame.h"
 #include "fonction.h"
-
 Mob BuildMob(){
     Mob Mob;
     Mob.Hp=25;
@@ -138,27 +138,53 @@ Room CreateFirstRoom(){
 }
 
 void PrintfRoom(Player * P1){
-     printf("\033c");
-    printf("Coo du joueur : %d x , %d y\n", P1->Position.x, P1->Position.y);
-    printf("Adresse de la salle du joueur : %p\n", (void*)P1->room);
-    printf("Joueur est dans la salle %d\n", P1->room->roomIndex);
-
+    printf("\033c");
+    //printf("Largeur %d\n",room.l);
+    //printf("Longueur : %d\n", room.L);
+    printf("Coo du joueur : %d x , %d y\n",P1->Position.x,P1->Position.y);
+    printf("Adresse de la salle du joueur : %p\n",P1->room);
+    printf("Joueur est dans la salle %d\n",P1->room->roomIndex);
     for (int i = 0; i < P1->room->l; i++) {
         for (int j = 0; j < P1->room->L; j++) {
-            switch (P1->room->Tab2D[i][j]) {
-                case 'A': printf("A"); break;
-                case '0': printf(" "); break;
-                case '1': printf("\U00002554"); break;
-                case '2': printf("\U00002557"); break;
-                case '3': printf("\U0000255A"); break;
-                case '4': printf("\U0000255D"); break;
-                case '5': printf("\U00002551"); break;
-                case '6': printf("\U00002550"); break;
-                case 'N': printf("N"); break;
-                case 'S': printf("S"); break;
-                case 'E': printf("E"); break;
-                case 'W': printf("W"); break;
+
+            if(P1->room->Tab2D[i][j]=='A'){
+                printf("A");
             }
+            if(P1->room->Tab2D[i][j]=='0'){
+                printf(" ");
+            }
+            if(P1->room->Tab2D[i][j]=='1'){
+                printf("\U00002554");
+            }
+            if(P1->room->Tab2D[i][j]=='2'){
+                printf("\U00002557");
+            }
+            if(P1->room->Tab2D[i][j]=='3'){
+                printf("\U0000255A");
+            }
+            if(P1->room->Tab2D[i][j]=='4'){
+                printf("\U0000255D");
+            }
+            if(P1->room->Tab2D[i][j]=='5'){
+                printf("\U00002551");
+            }
+            if(P1->room->Tab2D[i][j]=='6'){
+                printf("\U00002550");
+            }
+            if(P1->room->Tab2D[i][j]=='N'){
+                printf("N");
+            }
+            if(P1->room->Tab2D[i][j]=='S'){
+                printf("S");
+            }
+            if(P1->room->Tab2D[i][j]=='E'){
+                printf("E");
+            }
+            if(P1->room->Tab2D[i][j]=='W'){
+                printf("W");
+            }
+
+
         }
         printf("\n");
     }
@@ -240,7 +266,7 @@ void roomCreationInGame(Player *P1, Room** World,int  cpt) {
             NextRoom->TabDoor[0].NextRoomIndex=P1->room->roomIndex;
             NextRoom->roomIndex=cpt;
             break;
-        case 3:
+	case 3:
             // Le joueur entre par la porte ouest de la salle actuelle
             P1->room->TabConnectedDoor[3] = &(NextRoom->TabDoor[1]);
             NextRoom->TabConnectedDoor[1] = &(P1->room->TabDoor[3]);
@@ -251,7 +277,7 @@ void roomCreationInGame(Player *P1, Room** World,int  cpt) {
             NextRoom->TabDoor[1].NextRoomIndex=P1->room->roomIndex;
             NextRoom->roomIndex=cpt;
             break;
-        default:
+	default:
             // Gérer le cas où l'index de la porte n'est pas valide
             printf("Erreur: Index de porte invalide.\n");
             break;
@@ -276,28 +302,30 @@ void doorInteraction(Player* P1, Room** World,int  cpt){
 }
 
 void Travel(Player* P1,Room ** World,int * cpt){
-    char choice;
+    int choice;
+    do{
         printf("\033[33m\U0000256D"
                "\U00002500\U00002500\U00002500\U00002500\U00002500\U00002500\U00002500\U00002500\U00002500\U00002500"
                "\U00002500\U00002500\U00002500\U00002500\U00002500\U00002500\U00002500\U00002500\U00002500\U00002500"
-               "\U00002500"
+               "\U00002500\U00002500\U00002500"
                "\U0000256E\033[0m"
                "\n");
-        printf("\033[33m\U00002502  Quelle direction?  \U00002502\033[0m\n"
-               "\033[33m\U00002502\033[0m  \U000025B2 : z              \033[33m\U00002502\033[0m\n"
-               "\033[33m\U00002502\033[0m  \U000025C0 : q              \033[33m\U00002502\033[0m\n"
-               "\033[33m\U00002502\033[0m  \U000025BC : s              \033[33m\U00002502\033[0m\n"
-               "\033[33m\U00002502\033[0m  \U000025B6 : d              \033[33m\U00002502\033[0m\n"
-               "\033[33m\U00002502\033[0m  Quitter : 0        \033[33m\U00002502\033[0m\n");
+        printf("\033[33m\U00002502  Quelle direction?    \U00002502\033[0m\n"
+               "\033[33m\U00002502\033[0m  \U000025B2 : 4                \033[33m\U00002502\033[0m\n"
+               "\033[33m\U00002502\033[0m  \U000025C0 : 1                \033[33m\U00002502\033[0m\n"
+               "\033[33m\U00002502\033[0m  \U000025BC : 3                \033[33m\U00002502\033[0m\n"
+               "\033[33m\U00002502\033[0m  \U000025B6 : 2                \033[33m\U00002502\033[0m\n"
+               "\033[33m\U00002502\033[0m  Menu : 0             \033[33m\U00002502\033[0m\n");
         printf("\033[33m\U00002570"
                "\U00002500\U00002500\U00002500\U00002500\U00002500\U00002500\U00002500\U00002500\U00002500\U00002500"
                "\U00002500\U00002500\U00002500\U00002500\U00002500\U00002500\U00002500\U00002500\U00002500\U00002500"
-               "\U00002500"
+               "\U00002500\U00002500\U00002500"
                "\U0000256F\033[0m"
                "\n\n");
         printf("\033[35m\U000025CF"
                "\U000025BF\U000025BF\U000025BF\U000025BF\U000025BF\U000025BF\U000025BF\U000025BF\U000025BF\U000025BF"
                "\U000025BF\U000025BF\U000025BF\U000025BF\U000025BF\U000025BF\U000025BF\U000025BF\U000025BF\U000025BF"
+               "\U000025BF\U000025BF"
                "\U000025CF\033[0m"
                "\n");
         printf("     \033[35mSTATISTIQUES\033[0m\n"
@@ -308,11 +336,13 @@ void Travel(Player* P1,Room ** World,int * cpt){
         printf("\033[35m\U000025CF"
                "\U000025BF\U000025BF\U000025BF\U000025BF\U000025BF\U000025BF\U000025BF\U000025BF\U000025BF\U000025BF"
                "\U000025BF\U000025BF\U000025BF\U000025BF\U000025BF\U000025BF\U000025BF\U000025BF\U000025BF\U000025BF"
+               "\U000025BF\U000025BF"
                "\U000025CF\033[0m"
                "\n\n");
-	scanf("%c", &choice);
+        scanf("%d", &choice);
+    }while(choice<0 || choice>4);
     switch(choice){
-        case 'q':
+        case 1:
             if (P1->room->Tab2D[P1->Position.y][P1->Position.x - 1] == '0'){
                 P1->room->Tab2D[P1->Position.y][P1->Position.x] = '0';
                 if(P1->Position.x == P1->room->TabDoor[1].position.x && P1->Position.y == P1->room->TabDoor[1].position.y){
@@ -339,7 +369,7 @@ void Travel(Player* P1,Room ** World,int * cpt){
                 }
             }
             break;
-        case 'd':
+        case 2:
             if (P1->room->Tab2D[P1->Position.y][P1->Position.x + 1] == '0'){
                 P1->room->Tab2D[P1->Position.y][P1->Position.x] = '0';
                 if(P1->Position.x == P1->room->TabDoor[3].position.x && P1->Position.y == P1->room->TabDoor[3].position.y){
@@ -366,7 +396,7 @@ void Travel(Player* P1,Room ** World,int * cpt){
             }
             break;
 
-        case 's':
+        case 3:
             if (P1->room->Tab2D[P1->Position.y+1][P1->Position.x] == '0'){
                 P1->room->Tab2D[P1->Position.y][P1->Position.x] = '0';
                 if(P1->Position.x == P1->room->TabDoor[0].position.x && P1->Position.y == P1->room->TabDoor[0].position.y){
@@ -392,7 +422,7 @@ void Travel(Player* P1,Room ** World,int * cpt){
                 }
             }
             break;
-        case 'z':
+        case 4:
             if (P1->room->Tab2D[P1->Position.y-1][P1->Position.x] == '0'){
                 P1->room->Tab2D[P1->Position.y][P1->Position.x] = '0';
                 if(P1->Position.x == P1->room->TabDoor[2].position.x && P1->Position.y == P1->room->TabDoor[2].position.y){
@@ -418,11 +448,9 @@ void Travel(Player* P1,Room ** World,int * cpt){
                 }
             }
             break;
-        case '0':
-            exit(0);
-            break;
+        case 0:            
+		menuInGame();
         default:
             printf("Choix invalide? Veuillez réessayer.\n");
-	    break;
     }
 }
