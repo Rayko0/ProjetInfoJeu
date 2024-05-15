@@ -1,0 +1,3 @@
+- faire bien spawn les portes aléatoirement le nombre
+- changer le déplacement avec un seul caractère
+- timer
