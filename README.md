@@ -1,5 +1,5 @@
 - faire bien spawn les portes aléatoirement le nombre
-- changer le déplacement avec un seul caractère
+- changer le déplacement avec un seul caractère X
 - timer à ajouter
 - mobs dans les salles (combat)
 - stocker les stats pour relancer les games
