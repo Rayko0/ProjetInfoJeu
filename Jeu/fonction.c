@@ -445,7 +445,7 @@ void Travel(Player* P1,Room ** World,int * cpt){
             }
             break;
         case '0':
-            menu();
+            menuInGame();
             break;
         default:
             printf("Choix invalide? Veuillez réessayer.\n");
