@@ -1,4 +1,4 @@
-- faire bien spawn les portes aléatoirement le nombre
+- faire bien spawn les portes aléatoirement le nombre Bientôt
 - changer le déplacement avec un seul caractère X
 - timer à ajouter
 - mobs dans les salles (combat)
