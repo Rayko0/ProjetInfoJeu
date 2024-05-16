@@ -289,12 +289,32 @@ void roomCreationInGame(Player *P1, Room** World,int  cpt) {
     P1->room->Tab2D[P1->Position.y][P1->Position.x] = P1->skin;
 }
 
-void doorInteraction(Player* P1, Room** World,int  cpt){
+void doorInteraction(Player* P1, Room** World,int  cpt, char dir){
     int choice;
     printf("Voulez-vous aller dans la prochaine salle ? 1 oui 0 non\n");
     scanf("%d", &choice);
     if(choice == 1){
         roomCreationInGame(P1, World,cpt);
+    }
+    else if(choice == 0){
+	switch (dir){
+		case 's':
+			P1->Position.y-=1;
+			P1->room->Tab2D[P1->Position.y][P1->Position.x]=P1->skin;
+			break; 
+		case 'n':
+			P1->Position.y+=1;
+			P1->room->Tab2D[P1->Position.y][P1->Position.x]=P1->skin;
+			break;
+		case 'e':
+			P1->Position.x-=1;
+			P1->room->Tab2D[P1->Position.y][P1->Position.x]=P1->skin;
+			break;
+		case 'w':
+			P1->Position.x+=1;
+			P1->room->Tab2D[P1->Position.y][P1->Position.x]=P1->skin;
+			break;
+	}
     }
     else{
         return;
@@ -342,7 +362,8 @@ void Travel(Player* P1, Room** World, int* cpt) {
     if (fgets(buffer, sizeof(buffer), stdin) != NULL) {
         // Assurez-vous que l'entrée ne contient qu'un seul caractère suivi d'un '\n'
         if (sscanf(buffer, " %c", &choice) == 1 && buffer[1] == '\n') {
-            switch (choice) {
+            
+	switch (choice) {
                 case 'q':
                     if (P1->room->Tab2D[P1->Position.y][P1->Position.x - 1] == '0') {
                         P1->room->Tab2D[P1->Position.y][P1->Position.x] = '0';
@@ -353,10 +374,11 @@ void Travel(Player* P1, Room** World, int* cpt) {
                         P1->room->Tab2D[P1->Position.y][P1->Position.x] = P1->skin;
                     } else if (P1->room->Tab2D[P1->Position.y][P1->Position.x - 1] == 'W') {
                         P1->room->Tab2D[P1->Position.y][P1->Position.x] = '0';
-                        if (P1->room->TabConnectedDoor[3] == NULL) {
+                        char dir = 'w';
+			if (P1->room->TabConnectedDoor[3] == NULL) {
                             (*cpt)++;
                             P1->Position.x = P1->Position.x - 1;
-                            doorInteraction(P1, World, *cpt);
+                            doorInteraction(P1, World, *cpt, dir);
                         } else {
                             P1->Position.x = P1->room->TabConnectedDoor[3]->position.x;
                             P1->Position.y = P1->room->TabConnectedDoor[3]->position.y;
@@ -375,10 +397,11 @@ void Travel(Player* P1, Room** World, int* cpt) {
                         P1->room->Tab2D[P1->Position.y][P1->Position.x] = P1->skin;
                     } else if (P1->room->Tab2D[P1->Position.y][P1->Position.x + 1] == 'E') {
                         P1->room->Tab2D[P1->Position.y][P1->Position.x] = '0';
-                        if (P1->room->TabConnectedDoor[1] == NULL) {
+                        char dir = 'e';
+			if (P1->room->TabConnectedDoor[1] == NULL) {
                             (*cpt)++;
                             P1->Position.x = P1->Position.x + 1;
-                            doorInteraction(P1, World, *cpt);
+                            doorInteraction(P1, World, *cpt, dir);
                         } else {
                             P1->Position.x = P1->room->TabConnectedDoor[1]->position.x;
                             P1->Position.y = P1->room->TabConnectedDoor[1]->position.y;
@@ -397,14 +420,15 @@ void Travel(Player* P1, Room** World, int* cpt) {
                         P1->room->Tab2D[P1->Position.y][P1->Position.x] = P1->skin;
                     } else if (P1->room->Tab2D[P1->Position.y + 1][P1->Position.x] == 'S') {
                         P1->room->Tab2D[P1->Position.y][P1->Position.x] = '0';
-                        if (P1->room->TabConnectedDoor[0] == NULL) {
+                        char dir = 's';
+			if (P1->room->TabConnectedDoor[2] == NULL) {
                             (*cpt)++;
                             P1->Position.y = P1->Position.y + 1;
-                            doorInteraction(P1, World, *cpt);
+                            doorInteraction(P1, World, *cpt, dir);
                         } else {
-                            P1->Position.x = P1->room->TabConnectedDoor[0]->position.x;
-                            P1->Position.y = P1->room->TabConnectedDoor[0]->position.y;
-                            P1->room = World[P1->room->TabDoor[0].NextRoomIndex];
+                            P1->Position.x = P1->room->TabConnectedDoor[2]->position.x;
+                            P1->Position.y = P1->room->TabConnectedDoor[2]->position.y;
+                            P1->room = World[P1->room->TabDoor[2].NextRoomIndex];
                             P1->room->Tab2D[P1->Position.y][P1->Position.x] = P1->skin;
                         }
                     }
@@ -419,14 +443,15 @@ void Travel(Player* P1, Room** World, int* cpt) {
                         P1->room->Tab2D[P1->Position.y][P1->Position.x] = P1->skin;
                     } else if (P1->room->Tab2D[P1->Position.y - 1][P1->Position.x] == 'N') {
                         P1->room->Tab2D[P1->Position.y][P1->Position.x] = '0';
-                        if (P1->room->TabConnectedDoor[2] == NULL) {
+                        char dir = 'n';
+			if (P1->room->TabConnectedDoor[0] == NULL) {
                             (*cpt)++;
                             P1->Position.y = P1->Position.y - 1;
-                            doorInteraction(P1, World, *cpt);
+                            doorInteraction(P1, World, *cpt, dir);
                         } else {
-                            P1->Position.x = P1->room->TabConnectedDoor[2]->position.x;
-                            P1->Position.y = P1->room->TabConnectedDoor[2]->position.y;
-                            P1->room = World[P1->room->TabDoor[2].NextRoomIndex];
+                            P1->Position.x = P1->room->TabConnectedDoor[0]->position.x;
+                            P1->Position.y = P1->room->TabConnectedDoor[0]->position.y;
+                            P1->room = World[P1->room->TabDoor[0].NextRoomIndex];
                             P1->room->Tab2D[P1->Position.y][P1->Position.x] = P1->skin;
                         }
                     }
@@ -443,4 +468,43 @@ void Travel(Player* P1, Room** World, int* cpt) {
     } else {
         printf("Erreur lors de la lecture de l'entrée.\n");
     }
+}
+
+void combat(Player *player, Mob *mob) {
+    srand(time(NULL)); // Initialisation du générateur de nombres aléatoires
+
+    // Boucle de combat jusqu'à ce que l'un des participants n'ait plus de points de vie
+    while (player->Hp > 0 && mob->Hp > 0) {
+        // Le joueur attaque le monstre
+        float player_damage = player->Atk * (1 - (mob->Esq / 100)); // Calcul des dégâts du joueur
+        mob->Hp -= player_damage; // Réduction des points de vie du monstre
+
+        // Le monstre attaque le joueur
+        float mob_damage = mob->Atk * (1 - (player->Esq / 100)); // Calcul des dégâts du monstre
+        player->Hp -= mob_damage; // Réduction des points de vie du joueur
+
+        // Affichage des dégâts infligés à chaque tour
+        printf("%s inflige %.2f dégâts au Mob\n", player->Name, player_damage);
+        printf("Le Mob inflige %.2f dégâts à %s.\n", mob_damage, player->Name);
+    }
+
+    // Affichage du résultat du combat
+    if (player->Hp <= 0) {
+        printf("%s a été vaincu par la créature !\n", player->Name);
+    } else {
+        printf("%s a vaincu la créature !\n", player->Name);
+    }
+}
+
+void Clock(){
+    int timer = 60;
+    while (timer > 0) {
+        printf("Temps restant : %d secondes\n", timer);
+        sleep(1); // Pause d'une seconde
+        timer--; // Décrémente le timer
+    }
+
+    printf("Temps écoulé !\n");
+
+    return 0;
 }
