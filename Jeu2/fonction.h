@@ -17,7 +17,13 @@ typedef struct {
     int y;
 } Coordinates;
 
-
+typedef struct {
+   Coordinates position;
+   int Sword;
+   int Heart;
+   int Shield;
+   char* skin;
+} Item;
 
 typedef struct {
     Coordinates position;
@@ -27,12 +33,21 @@ typedef struct {
 } Door;
 
 typedef struct {
+    char* skin;
+    float Hp;
+    float Atk;
+    Coordinates Position;
+} Mob;
+
+typedef struct {
     Coordinates size;
     Coordinates position;
     char*** Tab2D;
     Door TabDoor[4];
     Door* TabConnectedDoor[4];
     int RoomIndex;
+    Mob RoomMob;
+    Item RoomItem;
 } Room;
 
 typedef struct {
@@ -49,14 +64,10 @@ typedef struct {
     char* skin;
     Room* room;
     float Exp;
+    Item Inventory[4];
 } Player;
 
-typedef struct {
-    char skin;
-    float Hp;
-    float Atk;
-    Coordinates Position;
-} Mob;
+
 
 void AddRoomToWorld(World* world, Room* room);
 World* CreateWorld(int NumberOfRoom);
