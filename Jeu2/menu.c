@@ -1,6 +1,9 @@
+#include <stdio.h>
+#include <stdlib.h>
 #include "menuInGame.h"
 #include "fonction.h"
 #include "menu.h"
+
 void nouvellePartie(){
     srand(time(NULL));
     printf("\033c");
@@ -38,9 +41,16 @@ void chargerPartie(){
 }
 
 void menu(){
-    printf("Nouvelle partie : 1\n");
-    printf("Charger une partie : 2\n");
-    printf("Quitter : 0\n");
+    clearScreen();
+
+    printf("=========================================\n");
+    printf("|            Menu Principal             |\n");
+    printf("=========================================\n");
+    printf("| 1. Nouvelle Partie                    |\n");
+    printf("| 2. Charger Partie                     |\n");
+    printf("| 3. Quitter                            |\n");
+    printf("=========================================\n");
+    printf("Veuillez choisir une option : ");
     int choice;
     scanf("%d",&choice);
     switch (choice) {
