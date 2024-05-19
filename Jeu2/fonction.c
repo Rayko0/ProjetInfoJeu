@@ -9,17 +9,68 @@ const char* VIDE = " ";
 char* Doors[4] = {"╠", "╣" , "╦", "╩"};
 char* LinkSkin[4] = {"╌", "╌" , "╎", "╎"};
 char* Skins[9] = {"🧔", "👨‍🦱", "👩‍🦱", "🤖", "😼" , "👨‍🦳" ,"👶", "🤡", "😈"};
-char* Monsters[6] = {"👹", "👻", "👽", "👾", "🧞" ,"🧟"};
-//char* Animals = {"🦊", "🦝", "🐕‍🦺", "🐅", "🐴", "🦄", "🦏" ,"🐊", "🕷"};
-//char* items = {"🕸", "🗺" , "🧭", "🧱", "⌛", "❄", "🔥", "🥇","🩸","🩹","💊", "🥊", "🔫", "🎲", "🥾", "💎","🪓","🗡","💣","🛡","💰","💵","🔑", "🔋" ,"📖","📜"}
-//char* food = {"🍇", "🍉", "🍌" , "🍎", "🍖"};
+char* Monsters[6] = {"▓", "👻", "👽", "👾", "🧞" ,"🧟"};
+char* Items[3] = {"🗡","🛡","♡"};//0 = Epee, 1 = Bouclier, 2 = Coeur
+
+void PrintMessage(char* message){
+    // Pour afficher les messages dans un box
+    printf("\U0000256D"
+               "\U00002500\U00002500\U00002500\U00002500\U00002500\U00002500\U00002500\U00002500\U00002500\U00002500"
+               "\U00002500\U00002500\U00002500\U00002500\U00002500\U00002500\U00002500\U00002500\U00002500\U00002500"
+               "\U00002500\U00002500\U00002500\U00002500\U00002500\U00002500\U00002500\U00002500\U00002500\U00002500"
+               "\U00002500\U00002500\U00002500\U00002500\U00002500\U00002500\U00002500\U00002500\U00002500\U00002500"
+               "\U00002500\U00002500\U00002500\U00002500\U00002500\U00002500\U00002500\U00002500\U00002500\U00002500"
+               "\U00002500\U00002500\U00002500\U00002500\U00002500\U00002500\U00002500\U00002500\U00002500\U00002500"
+               "\U00002500\U00002500\U00002500\U00002500\U00002500\U00002500\U00002500\U00002500\U00002500\U00002500"
+               "\U00002500\U00002500\U00002500\U00002500\U00002500\U00002500\U00002500\U00002500\U00002500\U00002500"
+               "\U00002500\U00002500\U00002500\U00002500\U00002500\U00002500\U00002500\U00002500"
+               "\U0000256E"
+               "\n");
+        printf("\U00002502 %s\n", message);
+        printf("\U00002570"
+               "\U00002500\U00002500\U00002500\U00002500\U00002500\U00002500\U00002500\U00002500\U00002500\U00002500"
+               "\U00002500\U00002500\U00002500\U00002500\U00002500\U00002500\U00002500\U00002500\U00002500\U00002500"
+               "\U00002500\U00002500\U00002500\U00002500\U00002500\U00002500\U00002500\U00002500\U00002500\U00002500"
+               "\U00002500\U00002500\U00002500\U00002500\U00002500\U00002500\U00002500\U00002500\U00002500\U00002500"
+               "\U00002500\U00002500\U00002500\U00002500\U00002500\U00002500\U00002500\U00002500\U00002500\U00002500"
+               "\U00002500\U00002500\U00002500\U00002500\U00002500\U00002500\U00002500\U00002500\U00002500\U00002500"
+               "\U00002500\U00002500\U00002500\U00002500\U00002500\U00002500\U00002500\U00002500\U00002500\U00002500"
+               "\U00002500\U00002500\U00002500\U00002500\U00002500\U00002500\U00002500\U00002500\U00002500\U00002500"
+               "\U00002500\U00002500\U00002500\U00002500\U00002500\U00002500\U00002500\U00002500"
+               "\U0000256F"
+               "\n");
+}
 
 Mob BuildMob(){
     Mob Mob;
     Mob.Hp=25;
     Mob.Atk=5;
-    Mob.skin='*';
+    Mob.skin= Monsters[0];
     return Mob;
+}
+
+Item BuildItem() {
+    Item item;
+    int itemnum = rand() % 3;
+    if (itemnum == 0) {
+        item.Sword = 1;
+        item.Shield = 0;
+        item.Heart = 0;
+        item.skin = Items[0];
+    } else if (itemnum == 1) {
+        item.Sword = 0;
+        item.Shield = 1;
+        item.Heart = 0;
+        item.skin = Items[1];
+    } else if (itemnum == 2) {
+        item.Sword = 0;
+        item.Shield = 0;
+        item.Heart = 1;
+        item.skin = Items[2];
+    }
+    item.position.x = 0;
+    item.position.y = 0;
+    return item;
 }
 
 World* CreateWorld(int NumberOfRoom){
@@ -32,7 +83,7 @@ World* CreateWorld(int NumberOfRoom){
     world->map = malloc(sizeof(char**) * world->size.x);
     for(int i= 0; i < world->size.x; i++) {
         world->map[i] = malloc(sizeof(char*)*world->size.y);
-        for(int j = 0; j < world->size.y; j++) world->map[i][j] = VIDE;
+        for(int j = 0; j < world->size.y; j++) world->map[i][j] = " ";
     }
 
     return world;
@@ -123,7 +174,7 @@ Room* CreateRoom(int cnt) {
             else if(i == l-1 && j == 0) r->Tab2D[i][j] = "╚";
             else if (i == 0 || i == l - 1) r->Tab2D[i][j] = "═";
             else if (j == 0 || j == L - 1) r->Tab2D[i][j] = "║";
-            else r->Tab2D[i][j] = VIDE;
+            else r->Tab2D[i][j] = " ";
         }
     }
 
@@ -150,6 +201,46 @@ Room* CreateRoom(int cnt) {
         r->TabDoor[k].RoomIndex = r->RoomIndex;
         r->TabConnectedDoor[k]=NULL;
     }
+   Coordinates p;
+   int doorIndex;
+   do {
+        // Générer des coordonnées aléatoires à l'intérieur de la salle
+        p.x = rand() % (r->size.x - 2) + 1; // Évitez les bords
+        p.y = rand() % (r->size.y - 2) + 1;
+
+        // Vérifier si la position est devant une porte
+        doorIndex = -1;
+        for (int i = 0; i < 4; i++) {
+            if (p.x == r->TabDoor[i].position.x && p.y == r->TabDoor[i].position.y) {
+                doorIndex = i;
+ 		break; // La position est devant une porte, réessayer
+            }
+        }
+    } while (doorIndex != -1); // Réessayer jusqu'à ce que la position ne soit pas devant une porte 
+   Mob mob =BuildMob();
+   r->Tab2D[p.x][p.y]=mob.skin;
+   r->RoomMob = mob;
+   
+   Item item = BuildItem();
+   Coordinates p2;
+   int doorIndex2;
+   do {
+        // Générer des coordonnées aléatoires à l'intérieur de la salle
+        p2.x = rand() % (r->size.x - 2) + 1; // Évitez les bords
+        p2.y = rand() % (r->size.y - 2) + 1;
+
+        // Vérifier si la position est devant une porte
+        doorIndex2 = -1;
+        for (int i = 0; i < 4; i++) {
+            if (p2.x == r->TabDoor[i].position.x && p2.y == r->TabDoor[i].position.y) {
+                doorIndex2 = i;
+ 		break; // La position est devant une porte, réessayer
+            }
+        }
+    } while (doorIndex != -1 && p2.x==p.x && p2.y==p.y ); // Réessayer jusqu'à ce que la position ne soit pas devant une porte 
+    r->Tab2D[p2.x][p2.y]=item.skin;
+    r->RoomItem = item;
+
     return r;
 }
 
@@ -168,8 +259,7 @@ void PrintfRoom(Player * P1, World* world){
         for (int j = -CameraRangeY; j <= CameraRangeY; j++)
             if(!i && !j) printf("%s", P1->skin);
             else {
-                if(!j &&
-                 (world->map[P1->Position.x + i][P1->Position.y + j] == "║" || world->map[P1->Position.x + i][P1->Position.y + j] == " " || world->map[P1->Position.x + i][P1->Position.y + j] == "╎")) printf(" ");
+                if(!j && (world->map[P1->Position.x + i][P1->Position.y + j] == "║" || world->map[P1->Position.x + i][P1->Position.y + j] == " " || world->map[P1->Position.x + i][P1->Position.y + j] == "╎ ")) printf(" ");
                 else if(!j) printf("═");
                 printf("%s",world->map[P1->Position.x + i][P1->Position.y + j]);
             }
@@ -250,34 +340,6 @@ void roomCreationInGame(Player *P1, World* world, int cpt) {
     AddRoomToWorld(world,NextRoom);
 }
 
-void PrintMessage(char* message){
-    // Pour afficher les messages dans un box
-    printf("\U0000256D"
-               "\U00002500\U00002500\U00002500\U00002500\U00002500\U00002500\U00002500\U00002500\U00002500\U00002500"
-               "\U00002500\U00002500\U00002500\U00002500\U00002500\U00002500\U00002500\U00002500\U00002500\U00002500"
-               "\U00002500\U00002500\U00002500\U00002500\U00002500\U00002500\U00002500\U00002500\U00002500\U00002500"
-               "\U00002500\U00002500\U00002500\U00002500\U00002500\U00002500\U00002500\U00002500\U00002500\U00002500"
-               "\U00002500\U00002500\U00002500\U00002500\U00002500\U00002500\U00002500\U00002500\U00002500\U00002500"
-               "\U00002500\U00002500\U00002500\U00002500\U00002500\U00002500\U00002500\U00002500\U00002500\U00002500"
-               "\U00002500\U00002500\U00002500\U00002500\U00002500\U00002500\U00002500\U00002500\U00002500\U00002500"
-               "\U00002500\U00002500\U00002500\U00002500\U00002500\U00002500\U00002500\U00002500\U00002500\U00002500"
-               "\U00002500\U00002500\U00002500\U00002500\U00002500\U00002500\U00002500\U00002500"
-               "\U0000256E"
-               "\n");
-        printf("\U00002502 %s\n", message);
-        printf("\U00002570"
-               "\U00002500\U00002500\U00002500\U00002500\U00002500\U00002500\U00002500\U00002500\U00002500\U00002500"
-               "\U00002500\U00002500\U00002500\U00002500\U00002500\U00002500\U00002500\U00002500\U00002500\U00002500"
-               "\U00002500\U00002500\U00002500\U00002500\U00002500\U00002500\U00002500\U00002500\U00002500\U00002500"
-               "\U00002500\U00002500\U00002500\U00002500\U00002500\U00002500\U00002500\U00002500\U00002500\U00002500"
-               "\U00002500\U00002500\U00002500\U00002500\U00002500\U00002500\U00002500\U00002500\U00002500\U00002500"
-               "\U00002500\U00002500\U00002500\U00002500\U00002500\U00002500\U00002500\U00002500\U00002500\U00002500"
-               "\U00002500\U00002500\U00002500\U00002500\U00002500\U00002500\U00002500\U00002500\U00002500\U00002500"
-               "\U00002500\U00002500\U00002500\U00002500\U00002500\U00002500\U00002500\U00002500\U00002500\U00002500"
-               "\U00002500\U00002500\U00002500\U00002500\U00002500\U00002500\U00002500\U00002500"
-               "\U0000256F"
-               "\n");
-}
 
 void doorInteraction(Player* P1, World* world, int* cnt, int dir){
     int choice = -1;
@@ -293,8 +355,9 @@ void doorInteraction(Player* P1, World* world, int* cnt, int dir){
 
 
 void Travel(Player* P1, World* world,int * cnt){
-    int choice;
-    do{
+    char input;
+    char buffer[10]; // Utilisation d'un buffer pour lire l'entrée utilisateur
+ 
         PrintfRoom(P1, world);
         printf("\033[33m\U0000256D"
                "\U00002500\U00002500\U00002500\U00002500\U00002500\U00002500\U00002500\U00002500\U00002500\U00002500"
@@ -303,10 +366,10 @@ void Travel(Player* P1, World* world,int * cnt){
                "\U0000256E\033[0m"
                "\n");
         printf("\033[33m\U00002502  Quelle direction?    \U00002502\033[0m\n"
-               "\033[33m\U00002502\033[0m  \U000025B2 : 3                \033[33m\U00002502\033[0m\n"
-               "\033[33m\U00002502\033[0m  \U000025C0 : 1                \033[33m\U00002502\033[0m\n"
-               "\033[33m\U00002502\033[0m  \U000025BC : 4                \033[33m\U00002502\033[0m\n"
-               "\033[33m\U00002502\033[0m  \U000025B6 : 2                \033[33m\U00002502\033[0m\n"
+               "\033[33m\U00002502\033[0m  \U000025B2 : z                \033[33m\U00002502\033[0m\n"
+               "\033[33m\U00002502\033[0m  \U000025C0 : q                \033[33m\U00002502\033[0m\n"
+               "\033[33m\U00002502\033[0m  \U000025BC : s                \033[33m\U00002502\033[0m\n"
+               "\033[33m\U00002502\033[0m  \U000025B6 : d                \033[33m\U00002502\033[0m\n"
                "\033[33m\U00002502\033[0m  Menu : 0             \033[33m\U00002502\033[0m\n");
         printf("\033[33m\U00002570"
                "\U00002500\U00002500\U00002500\U00002500\U00002500\U00002500\U00002500\U00002500\U00002500\U00002500"
@@ -314,8 +377,29 @@ void Travel(Player* P1, World* world,int * cnt){
                "\U00002500\U00002500\U00002500"
                "\U0000256F\033[0m"
                "\n\n");
-        scanf("%d", &choice);
-    }while(choice<0 || choice>4);
+
+    if (fgets(buffer, sizeof(buffer), stdin) != NULL) {
+        // Assurez-vous que l'entrée ne contient qu'un seul caractère suivi d'un '\n'
+        if (sscanf(buffer, " %c", &input) == 1 && buffer[1] == '\n') {   
+
+    int choice;
+    switch(input){
+    case 'z':
+     choice = 3;
+     break;
+    case 'q':
+     choice = 1;
+     break;
+    case 's':
+     choice = 4;
+     break;
+    case 'd':
+     choice = 2;
+     break;
+    case '0':
+     menuInGame();
+     break; 
+   }
     choice--;
     if (world->map[P1->Position.x  + MovX[choice]][P1->Position.y  + MovY[choice]] == Doors[choice]){
         if(P1->room->TabConnectedDoor[choice]==NULL) {
@@ -327,9 +411,10 @@ void Travel(Player* P1, World* world,int * cnt){
             P1->room = world->rooms[P1->room->TabConnectedDoor[choice]->RoomIndex];
         }
     }
-    if (world->map[P1->Position.x + MovX[choice]][P1->Position.y + MovY[choice]] == VIDE){
+    if (world->map[P1->Position.x + MovX[choice]][P1->Position.y + MovY[choice]] == " "){
         P1->Position.x += MovX[choice];
         P1->Position.y += MovY[choice];
     }
-    
+   } 
+}
 }
