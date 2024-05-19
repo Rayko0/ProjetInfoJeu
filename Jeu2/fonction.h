@@ -65,6 +65,8 @@ typedef struct {
     Room* room;
     float Exp;
     Item Inventory[4];
+    int KillCounter;
+    int DeathCounter;
 } Player;
 
 
