@@ -36,6 +36,8 @@ typedef struct {
     char* skin;
     float Hp;
     float Atk;
+    float Esq;
+    float Def;
     Coordinates Position;
 } Mob;
 
@@ -47,7 +49,7 @@ typedef struct {
     Door* TabConnectedDoor[4];
     int RoomIndex;
     Mob RoomMob;
-    Item RoomItem;
+    Item *RoomItem;
 } Room;
 
 typedef struct {
@@ -60,11 +62,13 @@ typedef struct {
     char Name[MAX_NAME_LENGTH];
     float Hp;
     float Atk;
+    float Def;
+    float Esq;
     Coordinates Position;
     char* skin;
     Room* room;
     float Exp;
-    Item Inventory[4];
+    Item *Inventory[4];
     int KillCounter;
     int DeathCounter;
 } Player;
@@ -83,6 +87,8 @@ void GetMiddle(int* x, int* y, Coordinates room);
 int findDoor(Player* P1);
 void roomCreationInGame(Player* P1, World* wrld, int cpt);
 void doorInteraction(Player* P1, World* World, int* cnt, int dir);
+void combat(Player *player, Mob *mob,World* world);
+void addToInventory(Player *P1, Room * room);
 void Travel(Player* P1, World* World, int* cpt);
 
 #endif
