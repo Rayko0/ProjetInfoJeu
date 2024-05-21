@@ -12,6 +12,11 @@ char* Skins[9] = {"🧔", "👨‍🦱", "👩‍🦱", "🤖", "😼" , "👨�
 char* Monsters[6] = {"▓", "👻", "👽", "👾", "🧞" ,"🧟"};
 char* Items[3] = {"🗡","🛡","♡"};//0 = Epee, 1 = Bouclier, 2 = Coeur
 
+void vide_buffer(){
+    while (getchar()!='\n'){
+    }
+}
+
 void PrintMessage(char* message){
     // Pour afficher les messages dans un box
     printf("\U0000256D"
@@ -240,8 +245,8 @@ Room* CreateRoom(int cnt) {
    int doorIndex;
    do {
         // Générer des coordonnées aléatoires à l'intérieur de la salle
-        p.x = rand() % (r->size.x - 2) + 1; // Évitez les bords
-        p.y = rand() % (r->size.y - 2) + 1;
+        p.x = rand() % (r->size.x - 5) + 2; // Évitez les bords
+        p.y = rand() % (r->size.y - 5) + 2;
 
         // Vérifier si la position est devant une porte
         doorIndex = -1;
@@ -265,8 +270,8 @@ Room* CreateRoom(int cnt) {
    int doorIndex2;
    do {
         // Générer des coordonnées aléatoires à l'intérieur de la salle
-        p2.x = rand() % (r->size.x - 2) + 1; // Évitez les bords
-        p2.y = rand() % (r->size.y - 2) + 1;
+        p2.x = rand() % (r->size.x - 5) + 2; // Évitez les bords
+        p2.y = rand() % (r->size.y - 5) + 2;
 
         // Vérifier si la position est devant une porte
         doorIndex2 = -1;
@@ -423,9 +428,9 @@ void addToInventory(Player *P1, Room * room){
 }
 
 void Travel(Player* P1, World* world,int * cnt){
-    char input;
-    char buffer[10]; // Utilisation d'un buffer pour lire l'entrée utilisateur
- 
+ 	char input;
+ 	int verif;	
+ 	do{
         PrintfRoom(P1, world);
         printf("\033[33m\U0000256D"
                "\U00002500\U00002500\U00002500\U00002500\U00002500\U00002500\U00002500\U00002500\U00002500\U00002500"
@@ -445,11 +450,9 @@ void Travel(Player* P1, World* world,int * cnt){
                "\U00002500\U00002500\U00002500"
                "\U0000256F\033[0m"
                "\n\n");
-
-    if (fgets(buffer, sizeof(buffer), stdin) != NULL) {
-        // Assurez-vous que l'entrée ne contient qu'un seul caractère suivi d'un '\n'
-        if (sscanf(buffer, " %c", &input) == 1 && buffer[1] == '\n') {   
-
+        verif=scanf("%c", &input);
+        vide_buffer();
+	} while (input!='z' && input!='q' && input!='s' && input!='d' && input!='0' && verif !=-1);
     int choice;
     switch(input){
     case 'z':
@@ -503,7 +506,7 @@ void Travel(Player* P1, World* world,int * cnt){
 	scanf("%d", &choix);
         switch(choix){
 		case 1:
-			P1->room->Tab2D[P1->room->RoomItem->position.x][P1->room->RoomItem->position.y]=" ";
+			//P1->room->Tab2D[P1->room->RoomItem->position.x][P1->room->RoomItem->position.y]=" ";
 
 			AddRoomToWorld(world, P1->room);
 			addToInventory(P1, P1->room);
@@ -521,7 +524,7 @@ void Travel(Player* P1, World* world,int * cnt){
 	scanf("%d", &choix);
         switch(choix){
 		case 1:
-			P1->room->Tab2D[P1->room->RoomItem->position.x][P1->room->RoomItem->position.y]=" ";
+			//P1->room->Tab2D[P1->room->RoomItem->position.x][P1->room->RoomItem->position.y]=" ";
 			AddRoomToWorld(world, P1->room);
 			addToInventory(P1, P1->room);
 			
@@ -539,7 +542,7 @@ void Travel(Player* P1, World* world,int * cnt){
 	scanf("%d", &choix);
         switch(choix){
 		case 1:
-			P1->room->Tab2D[P1->room->RoomItem->position.x][P1->room->RoomItem->position.y]=" ";
+			//P1->room->Tab2D[P1->room->RoomItem->position.x][P1->room->RoomItem->position.y]=" ";
 			AddRoomToWorld(world, P1->room);	
 			addToInventory(P1, P1->room);
 			break;
@@ -548,7 +551,4 @@ void Travel(Player* P1, World* world,int * cnt){
 	}
 
     }
-
-    } 
-}
 }
