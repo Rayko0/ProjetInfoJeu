@@ -19,6 +19,7 @@ typedef struct {
 
 typedef struct {
    Coordinates position;
+   int exist;
    int Sword;
    int Heart;
    int Shield;
@@ -34,6 +35,7 @@ typedef struct {
 
 typedef struct {
     char* skin;
+    int exist;
     float Hp;
     float Atk;
     float Esq;
@@ -49,7 +51,7 @@ typedef struct {
     Door* TabConnectedDoor[4];
     int RoomIndex;
     Mob RoomMob;
-    Item *RoomItem;
+    Item RoomItem;
 } Room;
 
 typedef struct {
@@ -68,7 +70,7 @@ typedef struct {
     char* skin;
     Room* room;
     float Exp;
-    Item *Inventory[4];
+    Item Inventory[4];
     int KillCounter;
     int DeathCounter;
 } Player;
