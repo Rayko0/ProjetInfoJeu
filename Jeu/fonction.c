@@ -305,31 +305,34 @@ void PrintfRoom(Player * P1, World* world){
         printf("\n");
     }    
      printf("\033[35m○"
-           "◈◈◈◈◈◈◈◈◈◈◈◈◈◈◈◈◈◈◈◈◈◈"
+           "◈◈◈◈◈◈◈◈◈◈◈◈◈◈◈◈◈◈◈◈◈◈◈◈◈"
            "○\033[0m"
            "\n");
     printf("     \033[35mSTATISTIQUES\033[0m\n"
-           "     \033[37mGame of  : %s\033[0m\n"
-           "     \033[32mHealth : %.2f\033[0m\n"
-           "     \033[31mAttack : %.2f\033[0m\n"
-           "     \033[36mExp : %.2f\033[0m\n", P1->Name, P1->Hp, P1->Atk, P1->Exp);
+           "     \033[37mPartie de  : %s\033[0m\n"
+           "     \033[32mVie : %.2f\033[0m\n"
+           "     \033[31mAttaque : %.2f\033[0m\n"
+           "     \033[36mExpérience : %.2f\033[0m\n", P1->Name, P1->Hp, P1->Atk, P1->Exp);
     printf("\033[35m○"
-           "◈◈◈◈◈◈◈◈◈◈◈◈◈◈◈◈◈◈◈◈◈◈"
+           "◈◈◈◈◈◈◈◈◈◈◈◈◈◈◈◈◈◈◈◈◈◈◈◈◈"
            "○\033[0m"
+           "\n\n");
+    printf("\033[35m◑"
+           "▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩"
+           "◐\033[0m"
            "\n");
-
     // Afficher l'inventaire
     printf("     \033[35mINVENTAIRE\033[0m\n");
     for (int i = 0; i < 4; i++) {
         if(P1->Inventory[i].exist!=0){
-        printf("     \033[33mSlot %d: %s\033[0m\n", i + 1, P1->Inventory[i].skin);
+        printf("     \033[33mEmplacement %d: %s\033[0m\n", i + 1, P1->Inventory[i].skin);
     	}
-	else{printf("     \033[33mSlot %d: Vide\033[0m\n",i+1);}
+	else{printf("     \033[33mEmplacement %d : Vide\033[0m\n",i+1);}
     }
 
-    printf("\033[35m○"
-           "◈◈◈◈◈◈◈◈◈◈◈◈◈◈◈◈◈◈◈◈◈◈"
-           "○\033[0m"
+    printf("\033[35m◑"
+           "▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩"
+           "◐\033[0m"
            "\n\n");
 }
 
