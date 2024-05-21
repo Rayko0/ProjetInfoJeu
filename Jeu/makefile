@@ -18,6 +18,3 @@ exec : main1.o menu.o fonction.o menuInGame.o
 clean:
 	rm -f *.o
 	rm -f exec
-	
-
-
