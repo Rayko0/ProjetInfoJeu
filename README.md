@@ -1,7 +1,3 @@
-- faire bien spawn les portes aléatoirement le nombre Bientôt
 - timer à ajouter
 - stocker les stats pour relancer les games
 - compter le nombre de salle / porte pour limiter le jeu
--------------------------------------------------------------------
-- emodjis à 2 caractères
-- ncurses
