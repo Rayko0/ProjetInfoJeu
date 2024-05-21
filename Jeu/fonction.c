@@ -330,7 +330,7 @@ void PrintfRoom(Player * P1, World* world){
            "○\033[0m"
            "\n\n");
     printf("\033[36m◑"
-           "◠◡◠◡◠◡◠◡◠◡◠◡◠◡◠◡◠◡◠◡◠◡◠◡◠◡"
+           "◠◡◠◡◠◡◠◡◠◡◠◡◠◡◠◡◠◡◠◡◠◡◠◡◠◡◠◡"
            "◐\033[0m"
            "\n");
     // Afficher l'inventaire
@@ -343,7 +343,7 @@ void PrintfRoom(Player * P1, World* world){
     }
 
     printf("\033[36m◑"
-           "◠◡◠◡◠◡◠◡◠◡◠◡◠◡◠◡◠◡◠◡◠◡◠◡◠◡"
+           "◠◡◠◡◠◡◠◡◠◡◠◡◠◡◠◡◠◡◠◡◠◡◠◡◠◡◠◡"
            "◐\033[0m"
            "\n\n");
 }
@@ -472,7 +472,7 @@ void Travel(Player* P1, World* world,int * cnt){
      menuInGame();
      break; 
    }
-    choice--;
+choice--;
     if (world->map[P1->Position.x  + MovX[choice]][P1->Position.y  + MovY[choice]] == Doors[choice]){
         if(P1->room->TabConnectedDoor[choice]==NULL) {
             doorInteraction(P1, world,cnt,choice);
@@ -507,8 +507,8 @@ void Travel(Player* P1, World* world,int * cnt){
 	scanf("%d", &choix);
         switch(choix){
 		case 1:
-			//P1->room->Tab2D[P1->room->RoomItem->position.x][P1->room->RoomItem->position.y]=" ";
-
+			P1->room->Tab2D[P1->room->RoomItem.position.x][P1->room->RoomItem.position.y]=" ";
+			P1->room->RoomItem.exist=0;
 			AddRoomToWorld(world, P1->room);
 			addToInventory(P1, P1->room);
 			
@@ -525,7 +525,8 @@ void Travel(Player* P1, World* world,int * cnt){
 	scanf("%d", &choix);
         switch(choix){
 		case 1:
-			//P1->room->Tab2D[P1->room->RoomItem->position.x][P1->room->RoomItem->position.y]=" ";
+			P1->room->Tab2D[P1->room->RoomItem.position.x][P1->room->RoomItem.position.y]=" ";
+			P1->room->RoomItem.exist=0;
 			AddRoomToWorld(world, P1->room);
 			addToInventory(P1, P1->room);
 			
@@ -543,7 +544,8 @@ void Travel(Player* P1, World* world,int * cnt){
 	scanf("%d", &choix);
         switch(choix){
 		case 1:
-			//P1->room->Tab2D[P1->room->RoomItem->position.x][P1->room->RoomItem->position.y]=" ";
+			P1->room->Tab2D[P1->room->RoomItem.position.x][P1->room->RoomItem.position.y]=" ";
+			P1->room->RoomItem.exist=0;			
 			AddRoomToWorld(world, P1->room);	
 			addToInventory(P1, P1->room);
 			break;
