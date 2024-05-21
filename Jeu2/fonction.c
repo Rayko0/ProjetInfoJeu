@@ -131,7 +131,7 @@ Player* BuildPlayer(){
     P1->Position.y=0;
     P1->skin= Skins[0];
     for(int i=0; i<4; i++){
-	P1->Inventory[i]=NULL;
+	P1->Inventory[i].exist=0;
     }
 
     return P1;
@@ -165,7 +165,7 @@ void combat(Player *player, Mob *mob, World *World) {
         //Donc faut regénérer une map etc
     } else {
         printf("%s a vaincu le bug !\n", player->Name);
-    	player->room->Tab2D[player->room->RoomItem->position.x][player->room->RoomItem->position.y]=" ";
+    	//player->room->Tab2D[player->room->RoomItem.position.x][player->room->RoomItem.position.y]=" ";
 	AddRoomToWorld(World, player->room);
 }
 }
@@ -245,8 +245,8 @@ Room* CreateRoom(int cnt) {
    int doorIndex;
    do {
         // Générer des coordonnées aléatoires à l'intérieur de la salle
-        p.x = rand() % (r->size.x - 5) + 2; // Évitez les bords
-        p.y = rand() % (r->size.y - 5) + 2;
+        p.x = rand() % (r->size.x - 3) + 2; // Évitez les bords
+        p.y = rand() % (r->size.y - 3) + 2;
 
         // Vérifier si la position est devant une porte
         doorIndex = -1;
@@ -263,15 +263,15 @@ Room* CreateRoom(int cnt) {
    mob.Position.x=p.x;
    mob.Position.y=p.y;
    r->Tab2D[mob.Position.x][mob.Position.y]=mob.skin;
-
+   mob.exist=1;
    
    Item item = BuildItem();
    Coordinates p2;
    int doorIndex2;
    do {
         // Générer des coordonnées aléatoires à l'intérieur de la salle
-        p2.x = rand() % (r->size.x - 5) + 2; // Évitez les bords
-        p2.y = rand() % (r->size.y - 5) + 2;
+        p2.x = rand() % (r->size.x - 3) + 2; // Évitez les bords
+        p2.y = rand() % (r->size.y - 3) + 2;
 
         // Vérifier si la position est devant une porte
         doorIndex2 = -1;
@@ -282,10 +282,11 @@ Room* CreateRoom(int cnt) {
             }
         }
     } while (doorIndex2 != -1 || p2.x==p.x || p2.y==p.y ); // Réessayer jusqu'à ce que la position ne soit pas devant une porte 
-    r->RoomItem = &item;
-    r->RoomItem->position.x=p2.x;
-    r->RoomItem->position.y=p2.y;
-    r->Tab2D[r->RoomItem->position.x][r->RoomItem->position.y]=item.skin;
+    r->RoomItem = item;
+    r->RoomItem.position.x=p2.x;
+    r->RoomItem.position.y=p2.y;
+    r->Tab2D[r->RoomItem.position.x][r->RoomItem.position.y]=item.skin;
+    item.exist=1;
     return r;
 }
 
@@ -331,8 +332,8 @@ void PrintfRoom(Player * P1, World* world){
     // Afficher l'inventaire
     printf("     \033[35mINVENTAIRE\033[0m\n");
     for (int i = 0; i < 4; i++) {
-        if(P1->Inventory[i]!=NULL){
-        printf("     \033[33mSlot %d: %s\033[0m\n", i + 1, P1->Inventory[i]->skin);
+        if(P1->Inventory[i].exist!=0){
+        printf("     \033[33mSlot %d: %s\033[0m\n", i + 1, P1->Inventory[i].skin);
     	}
 	else{printf("     \033[33mSlot %d: Vide\033[0m\n",i+1);}
     }
@@ -415,14 +416,15 @@ void doorInteraction(Player* P1, World* world, int* cnt, int dir){
 }
 void addToInventory(Player *P1, Room * room){
    for(int i=0; i<4; i++){
-	if(P1->Inventory[i] == NULL){
+	if(P1->Inventory[i].exist == 0){
 		P1->Inventory[i]=room->RoomItem;
-		room->RoomItem=NULL;
+		P1->Inventory[i].exist=1;
+		printf("L'objet c'est %s\n" ,P1->Inventory[i].skin);
 		break;
         }
    	
    }
-   if(room->RoomItem!=NULL){
+   if(room->RoomItem.exist!=0){
 	printf("Inventaire plein !\n");
    }
 }
@@ -506,8 +508,8 @@ void Travel(Player* P1, World* world,int * cnt){
 	scanf("%d", &choix);
         switch(choix){
 		case 1:
-			//P1->room->Tab2D[P1->room->RoomItem->position.x][P1->room->RoomItem->position.y]=" ";
-
+			P1->room->Tab2D[P1->room->RoomItem.position.x][P1->room->RoomItem.position.y]=" ";
+			P1->room->RoomItem.exist=0;
 			AddRoomToWorld(world, P1->room);
 			addToInventory(P1, P1->room);
 			
@@ -524,7 +526,8 @@ void Travel(Player* P1, World* world,int * cnt){
 	scanf("%d", &choix);
         switch(choix){
 		case 1:
-			//P1->room->Tab2D[P1->room->RoomItem->position.x][P1->room->RoomItem->position.y]=" ";
+			P1->room->Tab2D[P1->room->RoomItem.position.x][P1->room->RoomItem.position.y]=" ";
+			P1->room->RoomItem.exist=0;
 			AddRoomToWorld(world, P1->room);
 			addToInventory(P1, P1->room);
 			
@@ -542,7 +545,8 @@ void Travel(Player* P1, World* world,int * cnt){
 	scanf("%d", &choix);
         switch(choix){
 		case 1:
-			//P1->room->Tab2D[P1->room->RoomItem->position.x][P1->room->RoomItem->position.y]=" ";
+			P1->room->Tab2D[P1->room->RoomItem.position.x][P1->room->RoomItem.position.y]=" ";
+			P1->room->RoomItem.exist=0;			
 			AddRoomToWorld(world, P1->room);	
 			addToInventory(P1, P1->room);
 			break;
