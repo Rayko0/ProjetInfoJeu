@@ -74,7 +74,7 @@ typedef struct {
 } Player;
 
 
-
+void vide_buffer();
 void AddRoomToWorld(World* world, Room* room);
 World* CreateWorld(int NumberOfRoom);
 Mob BuildMob();
