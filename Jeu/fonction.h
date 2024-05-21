@@ -7,7 +7,7 @@
 #include <string.h>
 
 #define MAXROOM 20
-#define MAX_NAME_LENGTH 5
+#define MAX_NAME_LENGTH 7
 #define CameraRangeX 15
 #define CameraRangeY 40
 
@@ -19,6 +19,7 @@ typedef struct {
 
 typedef struct {
    Coordinates position;
+   int exist;
    int Sword;
    int Heart;
    int Shield;
@@ -34,6 +35,7 @@ typedef struct {
 
 typedef struct {
     char* skin;
+    int exist;
     float Hp;
     float Atk;
     float Esq;
@@ -49,7 +51,7 @@ typedef struct {
     Door* TabConnectedDoor[4];
     int RoomIndex;
     Mob RoomMob;
-    Item *RoomItem;
+    Item RoomItem;
 } Room;
 
 typedef struct {
@@ -68,12 +70,12 @@ typedef struct {
     char* skin;
     Room* room;
     float Exp;
-    Item *Inventory[4];
+    Item Inventory[4];
     int KillCounter;
     int DeathCounter;
 } Player;
 
-void wait_seconds(double seconds)
+void wait_seconds(double seconds);
 void vide_buffer();
 void AddRoomToWorld(World* world, Room* room);
 World* CreateWorld(int NumberOfRoom);
