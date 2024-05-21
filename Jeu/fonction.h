@@ -5,6 +5,7 @@
 #include <stdlib.h>
 #include <time.h>
 #include <string.h>
+#include <unistd.h>
 
 #define MAXROOM 20
 #define MAX_NAME_LENGTH 7
