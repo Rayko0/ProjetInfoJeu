@@ -123,7 +123,7 @@ Player* BuildPlayer(){
     P1->Position.y=0;
     P1->skin= Skins[0];
     for(int i=0; i<4; i++){
-	P1->Inventory[i]=NULL;
+	P1->Inventory[i].exist=0;
     }
 
     return P1;
@@ -157,7 +157,7 @@ void combat(Player *player, Mob *mob, World *World) {
         //Donc faut regénérer une map etc
     } else {
         printf("%s a vaincu le bug !\n", player->Name);
-    	player->room->Tab2D[player->room->RoomItem->position.x][player->room->RoomItem->position.y]=" ";
+    	//player->room->Tab2D[player->room->RoomItem.position.x][player->room->RoomItem.position.y]=" ";
 	AddRoomToWorld(World, player->room);
 }
 }
@@ -237,8 +237,8 @@ Room* CreateRoom(int cnt) {
    int doorIndex;
    do {
         // Générer des coordonnées aléatoires à l'intérieur de la salle
-        p.x = rand() % (r->size.x - 5) + 2; // Évitez les bords
-        p.y = rand() % (r->size.y - 5) + 2;
+        p.x = rand() % (r->size.x - 3) + 2; // Évitez les bords
+        p.y = rand() % (r->size.y - 3) + 2;
 
         // Vérifier si la position est devant une porte
         doorIndex = -1;
@@ -255,15 +255,15 @@ Room* CreateRoom(int cnt) {
    mob.Position.x=p.x;
    mob.Position.y=p.y;
    r->Tab2D[mob.Position.x][mob.Position.y]=mob.skin;
-
+   mob.exist=1;
    
    Item item = BuildItem();
    Coordinates p2;
    int doorIndex2;
    do {
         // Générer des coordonnées aléatoires à l'intérieur de la salle
-        p2.x = rand() % (r->size.x - 5) + 2; // Évitez les bords
-        p2.y = rand() % (r->size.y - 5) + 2;
+        p2.x = rand() % (r->size.x - 3) + 2; // Évitez les bords
+        p2.y = rand() % (r->size.y - 3) + 2;
 
         // Vérifier si la position est devant une porte
         doorIndex2 = -1;
@@ -274,10 +274,11 @@ Room* CreateRoom(int cnt) {
             }
         }
     } while (doorIndex2 != -1 || p2.x==p.x || p2.y==p.y ); // Réessayer jusqu'à ce que la position ne soit pas devant une porte 
-    r->RoomItem = &item;
-    r->RoomItem->position.x=p2.x;
-    r->RoomItem->position.y=p2.y;
-    r->Tab2D[r->RoomItem->position.x][r->RoomItem->position.y]=item.skin;
+    r->RoomItem = item;
+    r->RoomItem.position.x=p2.x;
+    r->RoomItem.position.y=p2.y;
+    r->Tab2D[r->RoomItem.position.x][r->RoomItem.position.y]=item.skin;
+    item.exist=1;
     return r;
 }
 
@@ -292,7 +293,7 @@ void PrintfRoom(Player * P1, World* world){
     printf("\033c");
     
     printf("Coo du joueur : %d x , %d y\n",P1->Position.x,P1->Position.y);
-    printf("Joueur est dans la salle %d\n",P1->room->RoomIndex);
+    printf("Le joueur est dans la salle %d\n",P1->room->RoomIndex);
     for (int i = -CameraRangeX; i <= CameraRangeX; i++) {
         for (int j = -CameraRangeY; j <= CameraRangeY; j++)
             if(!i && !j) printf("%s", P1->skin);
@@ -308,7 +309,7 @@ void PrintfRoom(Player * P1, World* world){
            "○\033[0m"
            "\n");
     printf("     \033[35mSTATISTIQUES\033[0m\n"
-           "     \033[37mPartie de : %s\033[0m\n"
+           "     \033[37mGame of  : %s\033[0m\n"
            "     \033[32mHealth : %.2f\033[0m\n"
            "     \033[31mAttack : %.2f\033[0m\n"
            "     \033[36mExp : %.2f\033[0m\n", P1->Name, P1->Hp, P1->Atk, P1->Exp);
@@ -320,8 +321,8 @@ void PrintfRoom(Player * P1, World* world){
     // Afficher l'inventaire
     printf("     \033[35mINVENTAIRE\033[0m\n");
     for (int i = 0; i < 4; i++) {
-        if(P1->Inventory[i]!=NULL){
-        printf("     \033[33mSlot %d: %s\033[0m\n", i + 1, P1->Inventory[i]->skin);
+        if(P1->Inventory[i].exist!=0){
+        printf("     \033[33mSlot %d: %s\033[0m\n", i + 1, P1->Inventory[i].skin);
     	}
 	else{printf("     \033[33mSlot %d: Vide\033[0m\n",i+1);}
     }
@@ -345,7 +346,7 @@ int findDoor(Player *P1) {
     for (int i = 0; i < 4; i++) {
         if (P1->Position.x == P1->room->TabDoor[i].position.x + P1->room->position.x 
         && P1->Position.y == P1->room->TabDoor[i].position.y + P1->room->position.y) {
-            printf("la porte est la porte %d\n",i);
+            printf("La porte est la porte numéro %d\n.",i);
             return i;
         }
     }
@@ -400,16 +401,18 @@ void doorInteraction(Player* P1, World* world, int* cnt, int dir){
         roomCreationInGame(P1, world, *cnt);
     }
 }
+
 void addToInventory(Player *P1, Room * room){
    for(int i=0; i<4; i++){
-	if(P1->Inventory[i] == NULL){
+	if(P1->Inventory[i].exist == 0){
 		P1->Inventory[i]=room->RoomItem;
-		room->RoomItem=NULL;
+		P1->Inventory[i].exist=1;
+		printf("L'objet c'est %s\n" ,P1->Inventory[i].skin);
 		break;
         }
    	
    }
-   if(room->RoomItem!=NULL){
+   if(room->RoomItem.exist!=0){
 	printf("Inventaire plein !\n");
    }
 }
@@ -424,10 +427,10 @@ void Travel(Player* P1, World* world,int * cnt){
                "┐\033[0m"
                "\n");
         printf("\033[33m\U00002502  Quelle direction?    \U00002502\033[0m\n"
-               "\033[33m\U00002502\033[0m  \U000025B2 : z                \033[33m\U00002502\033[0m\n"
-               "\033[33m\U00002502\033[0m  \U000025C0 : q                \033[33m\U00002502\033[0m\n"
-               "\033[33m\U00002502\033[0m  \U000025BC : s                \033[33m\U00002502\033[0m\n"
-               "\033[33m\U00002502\033[0m  \U000025B6 : d                \033[33m\U00002502\033[0m\n"
+               "\033[33m\U00002502\033[0m  🔼 : z               \033[33m\U00002502\033[0m\n"
+               "\033[33m\U00002502\033[0m  ◀️ : q               \033[33m\U00002502\033[0m\n"
+               "\033[33m\U00002502\033[0m  🔽 : s               \033[33m\U00002502\033[0m\n"
+               "\033[33m\U00002502\033[0m  ▶️ : d               \033[33m\U00002502\033[0m\n"
                "\033[33m\U00002502\033[0m  Menu : 0             \033[33m\U00002502\033[0m\n");
         printf("\033[33m└"
                "───────────────────────"
@@ -484,7 +487,7 @@ void Travel(Player* P1, World* world,int * cnt){
     }
     else if (world->map[P1->Position.x + MovX[choice]][P1->Position.y + MovY[choice]] == "🗡"){
         int choix;
-	printf("Veux tu ajouter l'épée à ton inventaire ? (+X d'Attaque)\n");
+	printf("Veux-tu ajouter l'épée à ton inventaire ? (+X d'Attaque)\n");
 	printf("Oui : 1 / Non : 0\n");
 	scanf("%d", &choix);
         switch(choix){
@@ -502,7 +505,7 @@ void Travel(Player* P1, World* world,int * cnt){
     }
     else if (world->map[P1->Position.x + MovX[choice]][P1->Position.y + MovY[choice]] == "🛡"){
         int choix;
-	printf("Veux tu ajouter le bouclier à ton inventaire ? (+X de défense)\n");
+	printf("Veux-tu ajouter le bouclier à ton inventaire ? (+X de défense)\n");
 	printf("Oui : 1 / Non : 0\n");
 	scanf("%d", &choix);
         switch(choix){
@@ -520,7 +523,7 @@ void Travel(Player* P1, World* world,int * cnt){
     }
     else if (world->map[P1->Position.x + MovX[choice]][P1->Position.y + MovY[choice]] == "♡"){
         int choix;
-	printf("Veux tu ajouter du soin à ton inventaire ? ?\n");
+	printf("Veux-tu ajouter du soin à ton inventaire ? ?\n");
 	printf("Oui : 1 / Non : 0\n");
 	scanf("%d", &choix);
         switch(choix){
