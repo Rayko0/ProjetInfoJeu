@@ -37,11 +37,11 @@ void nouvellePartie(){
 }
 
 void chargerPartie(){
-    printf("en construction\n");
+    printf("En construction.\n");
 }
 
 void menu(){
-    clearScreen();
+    printf("\033c");
     int verif;
     printf("=========================================\n");
     printf("|            Menu Principal             |\n");
