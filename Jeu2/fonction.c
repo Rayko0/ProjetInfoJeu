@@ -1,6 +1,6 @@
 #include "menuInGame.h"
 #include "fonction.h"
-
+#include <unistd.h>
 const int MovX[4] = {0,0,-1,1};
 const int MovY[4] = {-1,1,0,0};
 const char* VIDE = " ";
@@ -97,9 +97,12 @@ World* CreateWorld(int NumberOfRoom){
 }
 
 void AddRoomToWorld(World* world, Room* room){
-    for(int i = 0; i < room->size.x; i++)
-        for(int j = 0; j < room->size.y; j++)
-            world->map[room->position.x+i][room->position.y+j] = room->Tab2D[i][j];
+    for(int i = 0; i < room->size.x; i++){
+        for(int j = 0; j < room->size.y; j++){
+            	
+		world->map[room->position.x+i][room->position.y+j] = room->Tab2D[i][j];
+}
+}
 }
 
 Player* BuildPlayer(){
@@ -135,6 +138,8 @@ Player* BuildPlayer(){
     }
 
     return P1;
+    P1->KillCounter=0;
+    P1->DeathCounter=0;
 }
 
 int GenerateNumberOfRoom(){ // Generate a random number of room between 10 and MAXROOM in a pointer to an integer
@@ -155,19 +160,29 @@ void combat(Player *player, Mob *mob, World *World) {
         player->Hp -= mob_damage; // Réduction des points de vie du joueur
 
         // Affichage des dégâts infligés à chaque tour
-        printf("%s inflige %.2f dégâts au bug\n", player->Name, player_damage);
+        sleep(1);
+	printf("%s inflige %.2f dégâts au bug\n", player->Name, player_damage);
         printf("Le bug inflige %.2f dégâts à %s.\n", mob_damage, player->Name);
     }
 
     // Affichage du résultat du combat
     if (player->Hp <= 0) {
-        printf("%s a été vaincu par le bug !\n", player->Name);
+        sleep(1);
+	printf("%s a été vaincu par le bug !\n", player->Name);
         //Donc faut regénérer une map etc
     } else {
-        printf("%s a vaincu le bug !\n", player->Name);
-    	//player->room->Tab2D[player->room->RoomItem.position.x][player->room->RoomItem.position.y]=" ";
+        sleep(1);
+	printf("%s a vaincu le bug !\n", player->Name);
+	sleep(1);
+	player->room->RoomMob.exist=0;
+	player->room->Tab2D[player->room->RoomMob.Position.x][player->room->RoomMob.Position.y]=" ";
+	player->KillCounter+=1;
+	sleep(1);
+	printf("%s a %d Kill\n", player->Name, player->KillCounter);
 	AddRoomToWorld(World, player->room);
+	sleep(1);
 }
+sleep(1);
 }
 
 Room* CreateRoom(int cnt) {
@@ -260,9 +275,9 @@ Room* CreateRoom(int cnt) {
    Mob mob =BuildMob();
    r->Tab2D[p.x][p.y]=mob.skin;
    r->RoomMob = mob;
-   mob.Position.x=p.x;
-   mob.Position.y=p.y;
-   r->Tab2D[mob.Position.x][mob.Position.y]=mob.skin;
+   r->RoomMob.Position.x=p.x;
+   r->RoomMob.Position.y=p.y;
+   r->Tab2D[r->RoomMob.Position.x][r->RoomMob.Position.y]=mob.skin;
    mob.exist=1;
    
    Item item = BuildItem();
