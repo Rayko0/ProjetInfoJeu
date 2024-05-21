@@ -127,6 +127,8 @@ Player* BuildPlayer(){
     }
 
     return P1;
+    P1->KillCounter=0;
+    P1->DeathCounter=0;
 }
 
 int GenerateNumberOfRoom(){ // Generate a random number of room between 10 and MAXROOM in a pointer to an integer
@@ -147,19 +149,29 @@ void combat(Player *player, Mob *mob, World *World) {
         player->Hp -= mob_damage; // Réduction des points de vie du joueur
 
         // Affichage des dégâts infligés à chaque tour
-        printf("%s inflige %.2f dégâts au bug\n", player->Name, player_damage);
+        sleep(1);
+	printf("%s inflige %.2f dégâts au bug\n", player->Name, player_damage);
         printf("Le bug inflige %.2f dégâts à %s.\n", mob_damage, player->Name);
     }
 
     // Affichage du résultat du combat
     if (player->Hp <= 0) {
-        printf("%s a été vaincu par le bug !\n", player->Name);
+        sleep(1);
+	printf("%s a été vaincu par le bug !\n", player->Name);
         //Donc faut regénérer une map etc
     } else {
-        printf("%s a vaincu le bug !\n", player->Name);
-    	//player->room->Tab2D[player->room->RoomItem.position.x][player->room->RoomItem.position.y]=" ";
+        sleep(1);
+	printf("%s a vaincu le bug !\n", player->Name);
+	sleep(1);
+	player->room->RoomMob.exist=0;
+	player->room->Tab2D[player->room->RoomMob.Position.x][player->room->RoomMob.Position.y]=" ";
+	player->KillCounter+=1;
+	sleep(1);
+	printf("%s a %d Kill\n", player->Name, player->KillCounter);
 	AddRoomToWorld(World, player->room);
+	sleep(1);
 }
+sleep(1);
 }
 
 Room* CreateRoom(int cnt) {
@@ -317,12 +329,12 @@ void PrintfRoom(Player * P1, World* world){
            "◈◈◈◈◈◈◈◈◈◈◈◈◈◈◈◈◈◈◈◈◈◈◈◈◈"
            "○\033[0m"
            "\n\n");
-    printf("\033[35m◑"
-           "▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩"
+    printf("\033[36m◑"
+           "◠◡◠◡◠◡◠◡◠◡◠◡◠◡◠◡◠◡◠◡◠◡◠◡◠◡"
            "◐\033[0m"
            "\n");
     // Afficher l'inventaire
-    printf("     \033[35mINVENTAIRE\033[0m\n");
+    printf("     \033[36mINVENTAIRE\033[0m\n");
     for (int i = 0; i < 4; i++) {
         if(P1->Inventory[i].exist!=0){
         printf("     \033[33mEmplacement %d: %s\033[0m\n", i + 1, P1->Inventory[i].skin);
@@ -330,8 +342,8 @@ void PrintfRoom(Player * P1, World* world){
 	else{printf("     \033[33mEmplacement %d : Vide\033[0m\n",i+1);}
     }
 
-    printf("\033[35m◑"
-           "▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩"
+    printf("\033[36m◑"
+           "◠◡◠◡◠◡◠◡◠◡◠◡◠◡◠◡◠◡◠◡◠◡◠◡◠◡"
            "◐\033[0m"
            "\n\n");
 }
