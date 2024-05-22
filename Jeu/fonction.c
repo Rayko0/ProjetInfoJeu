@@ -1,6 +1,6 @@
 #include "menuInGame.h"
 #include "fonction.h"
-
+#include <unistd.h>
 const int MovX[4] = {0,0,-1,1};
 const int MovY[4] = {-1,1,0,0};
 const char* VIDE = " ";
@@ -8,7 +8,7 @@ const char* VIDE = " ";
 //graphiques
 char* Doors[4] = {"╠", "╣" , "╦", "╩"};
 char* LinkSkin[4] = {"╌", "╌" , "╎", "╎"};
-char* Skins[9] = {"🧔", "👨‍🦱", "👩‍🦱", "🤖", "😼" , "👨‍🦳" ,"👶", "🤡", "😈"};
+char* Skins[6] = {"🧔", "🤖", "😼" ,"👶", "🤡", "😈"};
 char* Monsters[6] = {"▓", "👻", "👽", "👾", "🧞" ,"🧟"};
 char* Items[3] = {"🗡","🛡","♡"};//0 = Epee, 1 = Bouclier, 2 = Coeur
 
@@ -17,12 +17,14 @@ void vide_buffer(){
     }
 }
 
-void wait_seconds(double seconds) {
-    clock_t start = clock();
-    clock_t end = start + seconds * CLOCKS_PER_SEC;
-    while (clock() < end) {
-        // Boucle vide pour attendre
-    }
+Mob BuildMob(){
+    Mob Mob;
+    Mob.Hp=25;
+    Mob.Atk=5;
+    Mob.Esq=3;
+    Mob.Def=8;
+    Mob.skin= Monsters[0];
+    return Mob;
 }
 
 void PrintMessage(char* message){
@@ -38,15 +40,6 @@ void PrintMessage(char* message){
     "\n");
 }
 
-Mob BuildMob(){
-    Mob Mob;
-    Mob.Hp=25;
-    Mob.Atk=5;
-    Mob.Esq=3;
-    Mob.Def=8;
-    Mob.skin= Monsters[0];
-    return Mob;
-}
 
 Item BuildItem() {
     Item item;
@@ -75,23 +68,32 @@ Item BuildItem() {
 World* CreateWorld(int NumberOfRoom){
     World* world = malloc(sizeof(World));
     //define the map limits
-    world->size.x = 1024, world->size.y = 1024;
+    world->size.x = MAX_WORLD_SIZE, world->size.y = MAX_WORLD_SIZE;
     //define the rooms array in world
     world->rooms = malloc(sizeof(Room)*NumberOfRoom);
+
     //define the map array
     world->map = malloc(sizeof(char**) * world->size.x);
     for(int i= 0; i < world->size.x; i++) {
         world->map[i] = malloc(sizeof(char*)*world->size.y);
         for(int j = 0; j < world->size.y; j++) world->map[i][j] = " ";
     }
+    
+    //define the maximum number of Doors
+    world->NbMax = NumberOfRoom-1;
+    world->NbDoors = 0; 
+    world->NbRooms = 0; 
 
     return world;
 }
 
 void AddRoomToWorld(World* world, Room* room){
-    for(int i = 0; i < room->size.x; i++)
-        for(int j = 0; j < room->size.y; j++)
-            world->map[room->position.x+i][room->position.y+j] = room->Tab2D[i][j];
+    for(int i = 0; i < room->size.x; i++){
+        for(int j = 0; j < room->size.y; j++){
+            	
+		world->map[room->position.x+i][room->position.y+j] = room->Tab2D[i][j];
+}
+}
 }
 
 Player* BuildPlayer(){
@@ -131,9 +133,10 @@ Player* BuildPlayer(){
     P1->DeathCounter=0;
 }
 
-int GenerateNumberOfRoom(){ // Generate a random number of room between 10 and MAXROOM in a pointer to an integer
+int GenerateNumberOfRoom(){ 
+    // Generate a random number of room between 10 and MAXROOM in a pointer to an integer
     int a;
-    a = rand() %11 + (MAXROOM-10);
+    a = rand() % 11 + (MAXROOM-10);
     return a;
 }
 
@@ -174,16 +177,30 @@ void combat(Player *player, Mob *mob, World *World) {
 sleep(1);
 }
 
-Room* CreateRoom(int cnt) {
+bool isSpaceFree(World* world, Coordinates pos, int k) {
+    if (pos.x - 10 < 0 || pos.x + 10 >= world->size.x || pos.y - 10 < 0 || pos.y + 10 >= world->size.y) return false;
+    for (int i = -11 * (k%4 != 3) + 1; i < 11 * (k%4 != 2); i++) {
+        for (int j = -11 * (k%4 != 1) + 1; j < 11 * (k%4 != 0); j++) {
+            if (world->map[pos.x + i][pos.y + j] != VIDE) {
+                printf("test1\n");
+                return false; // Espace non libre
+            }
+        }
+    }
+    return true; // Espace libre
+}
+
+
+Room* CreateRoom(World* world) {
     int l, L;
-    Room* r = (Room*)malloc(sizeof(Room));
+    Room* r = malloc(sizeof(Room));
     if (r == NULL) {
         PrintMessage("Erreur : Échec de l'allocation de mémoire pour la nouvelle salle.");
         exit(1);
     }
-    r->RoomIndex = cnt;
-    L = ((rand() % 4)*2) + 5; // Générer une longueur aléatoire entre 3 et 11
-    l = ((rand() % 4)*2) + 5; // Générer une largeur aléatoire entre 3 et 11
+    r->RoomIndex = world->cnt;
+    L = ((rand() % 4)*2) + 5; // Générer une longueur aléatoire entre 3 et 11 et impaire
+    l = ((rand() % 4)*2) + 5; // Générer une largeur aléatoire entre 3 et 11 et impaire
 
     // Ajuster les dimensions si nécessaire pour éviter les salles de type couloir
     if (l - L > 3){
@@ -221,31 +238,7 @@ Room* CreateRoom(int cnt) {
             else r->Tab2D[i][j] = " ";
         }
     }
-
-    // Placer aléatoirement les portes sur chaque côté de la salle
-    // Porte d'indice 0 -> porte Ouest
-    // Porte d'indice 1 -> porte Est
-    // Porte d'indice 2 -> porte Nord
-    // Porte d'indice 3 -> porte Sud
-    for (int k = 0; k < 2; ++k)
-    {
-        r->TabDoor[k].position.x = rand() % (l - 2) + 1;
-        r->TabDoor[k].position.y = k * (L - 1);
-    }
-    for (int k = 2; k < 4; ++k)
-    {
-        r->TabDoor[k].position.x = (k%2) * (l - 1);
-        r->TabDoor[k].position.y = rand() % (L - 2) + 1;
-    }
-
-
-    for (int k = 0; k < 4; ++k) {
-        //printf("%d %d %d %d\n", r.TabDoor[k].position.x, r.TabDoor[k].position.y, l, L);
-        r->Tab2D[r->TabDoor[k].position.x][r->TabDoor[k].position.y] = Doors[k];
-        r->TabDoor[k].RoomIndex = r->RoomIndex;
-        r->TabConnectedDoor[k]=NULL;
-    }
-   Coordinates p;
+    Coordinates p;
    int doorIndex;
    do {
         // Générer des coordonnées aléatoires à l'intérieur de la salle
@@ -264,9 +257,9 @@ Room* CreateRoom(int cnt) {
    Mob mob =BuildMob();
    r->Tab2D[p.x][p.y]=mob.skin;
    r->RoomMob = mob;
-   mob.Position.x=p.x;
-   mob.Position.y=p.y;
-   r->Tab2D[mob.Position.x][mob.Position.y]=mob.skin;
+   r->RoomMob.Position.x=p.x;
+   r->RoomMob.Position.y=p.y;
+   r->Tab2D[r->RoomMob.Position.x][r->RoomMob.Position.y]=mob.skin;
    mob.exist=1;
    
    Item item = BuildItem();
@@ -291,20 +284,68 @@ Room* CreateRoom(int cnt) {
     r->RoomItem.position.y=p2.y;
     r->Tab2D[r->RoomItem.position.x][r->RoomItem.position.y]=item.skin;
     item.exist=1;
+
+    world->NbRooms++;
     return r;
 }
 
+void AddDoorToRoom(World* world, Room* r, int ObDoor){
+    // Porte d'indice 0 -> porte Ouest
+    // Porte d'indice 1 -> porte Est
+    // Porte d'indice 2 -> porte Nord
+    // Porte d'indice 3 -> porte Sud
+    for (int k = 0; k < 2; ++k)
+    {
+        // probablitié d'avoir une porte 3/5
+        if(k == ObDoor) continue;
+        if (rand() % 5 <= 1 || world->NbDoors >= world->NbMax)  r->TabDoor[k].position.x = r->TabDoor[k].position.y = -1;
+        else {
+            r->TabDoor[k].position.x = rand() % (r->size.x - 2) + 1;
+            r->TabDoor[k].position.y = k * (r->size.y - 1);
+            Coordinates pos;
+            pos.x =  r->TabDoor[k].position.x + r->position.x, pos.y =  r->TabDoor[k].position.y + r->position.y;
+            if(!isSpaceFree(world, pos, k)) r->TabDoor[k].position.x = r->TabDoor[k].position.y = -1;
+            else world->NbDoors++;
+        }
+    }
+    for (int k = 2; k < 4; ++k)
+    {
+        if(k == ObDoor) continue;
+        if(rand() % 5 <= 1 || world->NbDoors >= world->NbMax)  r->TabDoor[k].position.x = r->TabDoor[k].position.y = -1;
+        else {
+            r->TabDoor[k].position.x = (k%2) * (r->size.x - 1);
+            r->TabDoor[k].position.y = rand() % (r->size.y - 2) + 1;
+            Coordinates pos;
+            pos.x =  r->TabDoor[k].position.x + r->position.x, pos.y =  r->TabDoor[k].position.y + r->position.y;
+            if(!isSpaceFree(world, pos, k)) r->TabDoor[k].position.x = r->TabDoor[k].position.y = -1;
+            else world->NbDoors++;
+        }
+    }
 
-Room* CreateFirstRoom(){
-    Room* r;
-    r = CreateRoom(0);
+
+    for (int k = 0; k < 4; ++k) {
+        if(k == ObDoor) continue;
+        if(r->TabDoor[k].position.x != -1) r->Tab2D[r->TabDoor[k].position.x][r->TabDoor[k].position.y] = Doors[k];
+        r->TabDoor[k].RoomIndex = r->RoomIndex;
+        r->TabConnectedDoor[k]=NULL;
+    }
+}
+
+Room* CreateFirstRoom(World* world){
+    Room* r = CreateRoom(world);
+    int x = 0, y =0;
+    //find the coordinates of the player (define them in the middle of the map)
+    GetMiddle(&x,&y,world->size);
+    //define the position of the room in the map (we always save the top left corner)
+    r->position.x = x-r->size.x/2;
+    r->position.y = y-r->size.y/2;
+    AddDoorToRoom(world, r, -1);
     return r;
 }
 
 void PrintfRoom(Player * P1, World* world){
     printf("\033c");
-    
-    printf("Coo du joueur : %d x , %d y\n",P1->Position.x,P1->Position.y);
+   
     printf("Le joueur est dans la salle %d\n",P1->room->RoomIndex);
     for (int i = -CameraRangeX; i <= CameraRangeX; i++) {
         for (int j = -CameraRangeY; j <= CameraRangeY; j++)
@@ -361,7 +402,6 @@ int findDoor(Player *P1) {
     for (int i = 0; i < 4; i++) {
         if (P1->Position.x == P1->room->TabDoor[i].position.x + P1->room->position.x 
         && P1->Position.y == P1->room->TabDoor[i].position.y + P1->room->position.y) {
-            printf("La porte est la porte numéro %d\n.",i);
             return i;
         }
     }
@@ -371,15 +411,16 @@ int findDoor(Player *P1) {
 }
 
 
-void roomCreationInGame(Player *P1, World* world, int cpt) {
+void roomCreationInGame(Player *P1, World* world) {
     
     // Créer la nouvelle salle
-    Room* NextRoom = CreateRoom(cpt);
+    int CurrentDoorIndex = findDoor(P1);
+    // Le deuxième argument est pour créer obligatoirement la porte qui mène à la nouvelle chambre
+    Room* NextRoom = CreateRoom(world);
     // Mettre à jour le tableau World avec un pointeur vers la nouvelle salle
-    world->rooms[cpt] = NextRoom;
+    world->rooms[world->cnt] = NextRoom;
 
     // Trouver la porte par laquelle le joueur entre dans la nouvelle salle
-    int CurrentDoorIndex = findDoor(P1);
     P1->Position.x += MovX[CurrentDoorIndex];
     P1->Position.y += MovY[CurrentDoorIndex];
 
@@ -387,33 +428,57 @@ void roomCreationInGame(Player *P1, World* world, int cpt) {
 
     P1->Position.x += MovX[CurrentDoorIndex];
     P1->Position.y += MovY[CurrentDoorIndex];   
-    // Identifier la porte de la nouvelle salle où le joueur sortira
+    // Créer la porte de la nouvelle salle où le joueur sortira
     // et établir une liaison entre les deux portes
-
     // l'est et l'ouest se connectent et le nord avec le sud
     // Donc 0 <-> 1 et 2 <-> 3
     // Donc il suffit de changer la premiére bit pour trouver l'autre porte : on peut utiliser l'operation XOR.
-    P1->room->TabConnectedDoor[CurrentDoorIndex] = &(NextRoom->TabDoor[CurrentDoorIndex ^ 1]);
-    NextRoom->TabConnectedDoor[CurrentDoorIndex ^ 1] = &(P1->room->TabDoor[CurrentDoorIndex]);
+    int NextDoorIndex = CurrentDoorIndex ^ 1;
+
+    if(NextDoorIndex >= 2){
+        NextRoom->TabDoor[NextDoorIndex].position.x = (NextDoorIndex%2) * (NextRoom->size.x - 1);
+        NextRoom->TabDoor[NextDoorIndex].position.y = rand() % (NextRoom->size.y - 2) + 1;
+    } else {
+        NextRoom->TabDoor[NextDoorIndex].position.x = rand() % (NextRoom->size.x - 2) + 1;
+        NextRoom->TabDoor[NextDoorIndex].position.y = NextDoorIndex * (NextRoom->size.y - 1);
+    }
+    NextRoom->Tab2D[NextRoom->TabDoor[NextDoorIndex].position.x][NextRoom->TabDoor[NextDoorIndex].position.y] = Doors[NextDoorIndex];
+    NextRoom->TabDoor[NextDoorIndex].RoomIndex = NextRoom->RoomIndex;   
+
+
+    
+    P1->room->TabConnectedDoor[CurrentDoorIndex] = &(NextRoom->TabDoor[NextDoorIndex]);
+    NextRoom->TabConnectedDoor[NextDoorIndex] = &(P1->room->TabDoor[CurrentDoorIndex]);
 
     NextRoom->position.x = P1->Position.x - P1->room->TabConnectedDoor[CurrentDoorIndex]->position.x;
     NextRoom->position.y = P1->Position.y - P1->room->TabConnectedDoor[CurrentDoorIndex]->position.y;
-    printf("%d %d\n", NextRoom->position.x , NextRoom->position.y );
+
+    //  Ajouter les autres portes 
+    AddDoorToRoom(world,NextRoom,NextDoorIndex);
+
     // Mettre à jour la salle actuelle du joueur avec la nouvelle salle
     P1->room = NextRoom;
     AddRoomToWorld(world,NextRoom);
 }
 
 
-void doorInteraction(Player* P1, World* world, int* cnt, int dir){
+
+void doorInteraction(Player* P1, World* world, int dir){
     int choice = -1;
-    PrintMessage("Voulez-vous aller dans la prochaine salle ? 1 oui 0 non");
-    scanf("%d", &choice);
+    int verif;
+    do{
+        PrintMessage("Voulez-vous aller dans la prochaine salle ? 1 oui 0 non");
+
+        verif=scanf("%d", &choice);
+        vide_buffer();
+
+
+    } while (choice!='1' && choice !='0' && verif !=-1);
     if(choice == 1){
         P1->Position.x += MovX[dir];
         P1->Position.y += MovY[dir];
-        (*cnt)++;
-        roomCreationInGame(P1, world, *cnt);
+        (world->cnt)+=1;
+        roomCreationInGame(P1, world);
     }
 }
 
@@ -432,8 +497,8 @@ void addToInventory(Player *P1, Room * room){
    }
 }
 
-void Travel(Player* P1, World* world,int * cnt){
- 	char input;
+void Travel(Player* P1, World* world){
+    char input;
  	int verif;	
  	do{
         PrintfRoom(P1, world);
@@ -454,6 +519,7 @@ void Travel(Player* P1, World* world,int * cnt){
         verif=scanf("%c", &input);
         vide_buffer();
 	} while (input!='z' && input!='q' && input!='s' && input!='d' && input!='0' && verif !=-1);
+
     int choice;
     switch(input){
     case 'z':
@@ -469,13 +535,16 @@ void Travel(Player* P1, World* world,int * cnt){
      choice = 2;
      break;
     case '0':
-     menuInGame();
+	GameState GameState;
+	GameState.world = *world;
+	GameState.player = *P1;
+	menuInGame(GameState);
      break; 
    }
-choice--;
+   choice--;
     if (world->map[P1->Position.x  + MovX[choice]][P1->Position.y  + MovY[choice]] == Doors[choice]){
         if(P1->room->TabConnectedDoor[choice]==NULL) {
-            doorInteraction(P1, world,cnt,choice);
+            doorInteraction(P1, world,choice);
         }
         else{
             P1->Position.x += 3*MovX[choice];
@@ -489,9 +558,14 @@ choice--;
     }
     else if (world->map[P1->Position.x + MovX[choice]][P1->Position.y + MovY[choice]] == "▓"){
         int choix;
-	printf("ça fight ce bug ou quoi ?\n");
-	printf("Oui : 1 / J'ai peur : 0\n");
-	scanf("%d", &choix);
+        int verif;
+        do{
+		printf("ça fight ce bug ou quoi ?\n");
+		printf("Oui : 1 / J'ai peur : 0\n");
+
+		verif=scanf("%d", &choix);
+        	vide_buffer();
+	} while (choix!='1' && choix!='0' && verif !=-1);
 	switch(choix){
 		case 1:
 			combat(P1,&(P1->room->RoomMob), world);
@@ -502,9 +576,16 @@ choice--;
     }
     else if (world->map[P1->Position.x + MovX[choice]][P1->Position.y + MovY[choice]] == "🗡"){
         int choix;
-	printf("Veux-tu ajouter l'épée à ton inventaire ? (+X d'Attaque)\n");
-	printf("Oui : 1 / Non : 0\n");
-	scanf("%d", &choix);
+	int verif;
+	do{
+		printf("Veux tu ajouter l'épée à ton inventaire ? (+X d'Attaque)\n");
+		printf("Oui : 1 / Non : 0\n");
+
+		verif=scanf("%d", &choix);
+        	vide_buffer();
+
+	} while (choix!='1' && choix!='0' && verif !=-1);
+
         switch(choix){
 		case 1:
 			P1->room->Tab2D[P1->room->RoomItem.position.x][P1->room->RoomItem.position.y]=" ";
@@ -520,9 +601,15 @@ choice--;
     }
     else if (world->map[P1->Position.x + MovX[choice]][P1->Position.y + MovY[choice]] == "🛡"){
         int choix;
-	printf("Veux-tu ajouter le bouclier à ton inventaire ? (+X de défense)\n");
-	printf("Oui : 1 / Non : 0\n");
-	scanf("%d", &choix);
+	int verif;
+	do{
+		printf("Veux tu ajouter le bouclier à ton inventaire ? (+X de défense)\n");
+		printf("Oui : 1 / Non : 0\n");
+
+		verif=scanf("%d", &choix);
+        	vide_buffer();
+	} while (choix!='1' && choix!='0' && verif !=-1);
+
         switch(choix){
 		case 1:
 			P1->room->Tab2D[P1->room->RoomItem.position.x][P1->room->RoomItem.position.y]=" ";
@@ -539,9 +626,16 @@ choice--;
     }
     else if (world->map[P1->Position.x + MovX[choice]][P1->Position.y + MovY[choice]] == "♡"){
         int choix;
-	printf("Veux-tu ajouter du soin à ton inventaire ? ?\n");
-	printf("Oui : 1 / Non : 0\n");
-	scanf("%d", &choix);
+	int verif;
+	do{
+		printf("Veux tu ajouter du soin à ton inventaire ? ?\n");
+		printf("Oui : 1 / Non : 0\n");
+		
+		verif=scanf("%d", &choix);
+        	vide_buffer();
+
+	} while (choix!='1' && choix!='0' && verif !=-1);
+
         switch(choix){
 		case 1:
 			P1->room->Tab2D[P1->room->RoomItem.position.x][P1->room->RoomItem.position.y]=" ";
@@ -554,4 +648,5 @@ choice--;
 	}
 
     }
+
 }
