@@ -12,11 +12,6 @@ char* Skins[6] = {"🧔", "🤖", "😼" ,"👶", "🤡", "😈"};
 char* Monsters[6] = {"▓", "👻", "👽", "👾", "🧞" ,"🧟"};
 char* Items[3] = {"🗡","🛡","♡"};//0 = Epee, 1 = Bouclier, 2 = Coeur
 
-void vide_buffer(){
-    while (getchar()!='\n'){
-    }
-}
-
 Mob BuildMob(){
     Mob Mob;
     Mob.Hp=25;
@@ -100,7 +95,15 @@ Player* BuildPlayer(){
     Player* P1 = malloc(sizeof(Player));
 
     do {
-        printf("Donnez votre pseudo :\n");
+        printf("╭"
+        "────────────────────────"
+        "╮"
+        "\n");
+        printf("│  Donnez votre pseudo : │\n");
+        printf("╰"
+        "────────────────────────"
+        "╯"
+        "\n");
         scanf("%s", P1->Name);
         size_t len = strlen(P1->Name);
         /*if (P1.Name == NULL) {
@@ -112,7 +115,16 @@ Player* BuildPlayer(){
         }
         // Vérifier la longueur du pseudo
         if (len > MAX_NAME_LENGTH) {
-            PrintMessage("Le pseudo ne peut pas dépasser %d caractères. Veuillez réessayer.\n");
+	    printf("\033[31m╭"
+            "────────────────────────────────────────────────────────────────────"
+            "╮"
+            "\033[0m\n");
+            printf("\033[31m│\033[0m  Le pseudo ne peut pas dépasser %d caractères. Veuillez réessayer.  \033[31m│\033[0m\n", MAX_NAME_LENGTH);
+
+            printf("\033[31m╰"
+            "────────────────────────────────────────────────────────────────────"
+            "╯"
+            "\033[0m\n");
         }
     } while (strlen(P1->Name) > MAX_NAME_LENGTH);
 
@@ -467,13 +479,13 @@ void doorInteraction(Player* P1, World* world, int dir){
     int choice = -1;
     int verif;
     do{
-        PrintMessage("Voulez-vous aller dans la prochaine salle ? 1 oui 0 non");
+        PrintMessage("Voulez-vous aller dans la prochaine salle ? Oui : 1 Non : 0");
 
         verif=scanf("%d", &choice);
         vide_buffer();
 
 
-    } while (choice!='1' && choice !='0' && verif !=-1);
+    } while (choice!=1 && choice !=0 && verif !=-1);
     if(choice == 1){
         P1->Position.x += MovX[dir];
         P1->Position.y += MovY[dir];
@@ -503,17 +515,17 @@ void Travel(Player* P1, World* world){
  	do{
         PrintfRoom(P1, world);
         printf("\033[33m┌"
-               "───────────────────────"
+               "─────────────────────"
                "┐\033[0m"
                "\n");
-        printf("\033[33m\U00002502  Quelle direction?    \U00002502\033[0m\n"
-               "\033[33m\U00002502\033[0m  🔼 : z               \033[33m\U00002502\033[0m\n"
-               "\033[33m\U00002502\033[0m  ◀️ : q               \033[33m\U00002502\033[0m\n"
-               "\033[33m\U00002502\033[0m  🔽 : s               \033[33m\U00002502\033[0m\n"
-               "\033[33m\U00002502\033[0m  ▶️ : d               \033[33m\U00002502\033[0m\n"
-               "\033[33m\U00002502\033[0m  Menu : 0             \033[33m\U00002502\033[0m\n");
+        printf("\033[33m│  Quelle direction?  │\033[0m\n"
+               "\033[33m│\033[0m  🔼 : z             \033[33m│\033[0m\n"
+               "\033[33m│\033[0m  ◀️ : q             \033[33m│\033[0m\n"
+               "\033[33m│\033[0m  🔽 : s             \033[33m│\033[0m\n"
+               "\033[33m│\033[0m  ▶️ : d             \033[33m│\033[0m\n"
+               "\033[33m│\033[0m  Menu : 0           \033[33m│\033[0m\n");
         printf("\033[33m└"
-               "───────────────────────"
+               "─────────────────────"
                "┘\033[0m"
                "\n\n");
         verif=scanf("%c", &input);
@@ -565,7 +577,7 @@ void Travel(Player* P1, World* world){
 
 		verif=scanf("%d", &choix);
         	vide_buffer();
-	} while (choix!='1' && choix!='0' && verif !=-1);
+	} while (choix!=1 && choix!=0 && verif !=-1);
 	switch(choix){
 		case 1:
 			combat(P1,&(P1->room->RoomMob), world);
@@ -578,13 +590,13 @@ void Travel(Player* P1, World* world){
         int choix;
 	int verif;
 	do{
-		printf("Veux tu ajouter l'épée à ton inventaire ? (+X d'Attaque)\n");
+		printf("Voulez-vous ajouter l'épée à ton inventaire ? (+X d'Attaque)\n");
 		printf("Oui : 1 / Non : 0\n");
 
 		verif=scanf("%d", &choix);
         	vide_buffer();
 
-	} while (choix!='1' && choix!='0' && verif !=-1);
+	} while (choix!=1 && choix!=0 && verif !=-1);
 
         switch(choix){
 		case 1:
@@ -603,12 +615,12 @@ void Travel(Player* P1, World* world){
         int choix;
 	int verif;
 	do{
-		printf("Veux tu ajouter le bouclier à ton inventaire ? (+X de défense)\n");
+		printf("Voulez-vous le bouclier à ton inventaire ? (+X de défense)\n");
 		printf("Oui : 1 / Non : 0\n");
 
 		verif=scanf("%d", &choix);
         	vide_buffer();
-	} while (choix!='1' && choix!='0' && verif !=-1);
+	} while (choix!=1 && choix!=0 && verif !=-1);
 
         switch(choix){
 		case 1:
@@ -628,13 +640,13 @@ void Travel(Player* P1, World* world){
         int choix;
 	int verif;
 	do{
-		printf("Veux tu ajouter du soin à ton inventaire ? ?\n");
+		printf("Voulez-vous ajouter du soin à ton inventaire ? ?\n");
 		printf("Oui : 1 / Non : 0\n");
 		
 		verif=scanf("%d", &choix);
         	vide_buffer();
 
-	} while (choix!='1' && choix!='0' && verif !=-1);
+	} while (choix!=1 && choix!=0 && verif !=-1);
 
         switch(choix){
 		case 1:
