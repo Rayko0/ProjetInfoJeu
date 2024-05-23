@@ -6,6 +6,7 @@
 #include <time.h>
 #include <stdbool.h>
 #include <string.h>
+#include <pthread.h>
 
 #define MAXROOM 20
 #define MAX_NAME_LENGTH 5
@@ -13,7 +14,7 @@
 #define CameraRangeX 15
 #define CameraRangeY 40
 
-
+void decrement_time(int *minutes);
 void AddRoomToWorld(World* world, Room* room);
 bool isSpaceFree(World* world, Coordinates pos, int k);
 void AddDoorToRoom(World* world, Room* r, int ObDoor);
