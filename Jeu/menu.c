@@ -2,9 +2,34 @@
 #include "fonction.h"
 #include "menu.h"
 #include <unistd.h>
+#include <time.h>
+
+void decrement_time(int *minutes) {
+    if (*minutes > 0) {
+        (*minutes)--;
+    } else {
+        // Temps écoulé
+        *minutes = 0;
+    }
+}
+
+void *timer_thread(void *arg) {
+    int *minutes = (int *)arg;
+
+    while (*minutes > 0) {
+        sleep(60); // Attendre 1 minute
+        decrement_time(minutes);
+        printf("Time left: %d minutes\n", *minutes);
+    }
+
+    printf("Time's up!\n");
+    return NULL;
+}
+
 
 void nouvellePartie(){
     srand(time(NULL));
+    int time_remaining = 3;
     printf("\033c");
     int NumberOfRoom = GenerateNumberOfRoom();
     printf("Nombre de salle dans la partie : %d\n", NumberOfRoom);
@@ -27,6 +52,8 @@ void nouvellePartie(){
     AddRoomToWorld(world, room);
 
     world->cnt;
+    pthread_t timer_tid;
+    pthread_create(&timer_tid, NULL, timer_thread, &time_remaining);
     while(1){
         Travel(player,world);
     }
