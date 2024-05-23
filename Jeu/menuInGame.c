@@ -7,7 +7,6 @@ void vide_buffer(){
     }
 }
 
-
 void saveGame(GameState GameState){
 	FILE *file;
 file = fopen("savegame.bin", "wb");
