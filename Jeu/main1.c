@@ -5,6 +5,7 @@
 #include "menuInGame.h"
 #include "fonction.h"
 #include "menu.h"
+
 #define MAXROOM 20
 #define MAX_NAME_LENGTH 5
 
