@@ -533,6 +533,7 @@ void Travel(Player* P1, World* world){
 	} while (input!='z' && input!='q' && input!='s' && input!='d' && input!='0' && verif !=-1);
 
     int choice;
+    GameState GameState;
     switch(input){
     case 'z':
      choice = 3;
@@ -547,7 +548,6 @@ void Travel(Player* P1, World* world){
      choice = 2;
      break;
     case '0':
-	GameState GameState;
 	GameState.world = *world;
 	GameState.player = *P1;
 	menuInGame(GameState);
