@@ -4,6 +4,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 
+void *timer_thread(void *arg);
 void PrintMessage(char* message);
 void nouvellePartie();
 void chargerPartie();
