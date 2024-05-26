@@ -1,3 +1,0 @@
-- timer à ajouter
-- stocker les stats pour relancer les games
-- compter le nombre de salle / porte pour limiter le jeu
